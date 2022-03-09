@@ -1,6 +1,6 @@
 package com.happyzombie.springinitializr.service;
 
-import com.happyzombie.springinitializr.common.CompressAndDecompressUtil;
+import com.happyzombie.springinitializr.common.util.CompressAndDecompressUtil;
 import com.happyzombie.springinitializr.feignclient.ParasClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
