@@ -7,8 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.nio.charset.StandardCharsets;
-
 @Service
 @Slf4j
 public class ParasDataCollectionService {
@@ -27,7 +25,8 @@ public class ParasDataCollectionService {
     public String getParasData(){
         ResponseEntity<byte[]> nftAttributes = parasClient.getNFTAttributes("asac.near","2694");
         byte[] body = nftAttributes.getBody();
-        return new String(CompressAndDecompressUtil.gzipDecompress(body), StandardCharsets.UTF_8);
+        // todo 这种不灵活可以考虑取相应头的 Content-Encoding: br 然后根据结果解码
+        return CompressAndDecompressUtil.brDecompress(body);
     }
 
 }

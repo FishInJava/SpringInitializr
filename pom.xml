@@ -71,6 +71,7 @@
             jsoup：解析html
             feign-form：feign 支持表单提交post
             guava
+            brotli：br解压
         -->
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -102,6 +103,12 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>23.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.brotli</groupId>
+            <artifactId>dec</artifactId>
+            <version>0.1.2</version>
         </dependency>
 
     </dependencies>
