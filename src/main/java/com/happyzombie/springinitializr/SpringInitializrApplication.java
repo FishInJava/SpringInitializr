@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class SpringInitializrApplication {
 
     public static void main(String[] args) {
+        // 请求  -  生成一个excel进行简单筛选
         SpringApplication.run(SpringInitializrApplication.class, args);
     }
 
