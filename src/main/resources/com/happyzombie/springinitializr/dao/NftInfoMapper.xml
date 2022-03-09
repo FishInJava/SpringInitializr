@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.happyzombie.springinitializr.dao.NftInfoMapper">
+
+    <!--todo 自动生成 时间相关属性 -->
+    <insert id="insertOne"
+            parameterType="com.happyzombie.springinitializr.bean.Do.NftInfoDo">
+        insert into nft_info (collection_id, nft_id, attributes)
+        VALUES (#{collectionId}, #{nftId}, #{attributes});
+    </insert>
+
+</mapper>
