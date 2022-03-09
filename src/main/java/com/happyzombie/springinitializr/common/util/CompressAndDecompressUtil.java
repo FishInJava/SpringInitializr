@@ -1,4 +1,4 @@
-package com.happyzombie.springinitializr.common;
+package com.happyzombie.springinitializr.common.util;
 
 import lombok.extern.slf4j.Slf4j;
 
