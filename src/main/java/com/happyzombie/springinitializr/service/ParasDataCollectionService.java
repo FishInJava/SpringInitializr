@@ -1,5 +1,6 @@
 package com.happyzombie.springinitializr.service;
 
+import com.happyzombie.springinitializr.common.CompressAndDecompressUtil;
 import com.happyzombie.springinitializr.feignclient.ParasClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,7 @@ import java.nio.charset.StandardCharsets;
 public class ParasDataCollectionService {
 
     @Autowired
-    public ExcelCreate excelCreate;
+    public ExcelCreateService excelCreateService;
 
     @Autowired
     public ParasClient parasClient;
@@ -23,10 +24,10 @@ public class ParasDataCollectionService {
      * 观察数据格式
      * 整理重要数据到Excel
      */
-    public void getParasData(){
+    public String getParasData(){
         ResponseEntity<byte[]> nftAttributes = parasClient.getNFTAttributes("asac.near","2694");
         byte[] body = nftAttributes.getBody();
-        String s = new String(CompressAndDecompressUtil.gzipDecompress(body), StandardCharsets.UTF_8);
+        return new String(CompressAndDecompressUtil.gzipDecompress(body), StandardCharsets.UTF_8);
     }
 
 }
