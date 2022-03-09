@@ -8,4 +8,7 @@ public class NftInfoDo {
     private String collectionId;
     private String nftId;
     private String attributes;
+    private String tokenSeriesId;
+    private String name;
+    private String media;
 }

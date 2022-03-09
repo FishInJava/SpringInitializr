@@ -5,8 +5,15 @@
     <!--todo 自动生成 时间相关属性 -->
     <insert id="insertOne"
             parameterType="com.happyzombie.springinitializr.bean.Do.NftRarityDo">
-        insert into nft_rarity (nft_id, rarity)
-        VALUES (#{nftId}, #{rarity});
+        insert into nft_rarity (nft_id, rarity, antisocial_ape_club, antisocial_ape_club_count,
+                                antisocial_ape_club_rarity,
+                                skin, skin_count, skin_rarity, mouth, mouth_count, mouth_rarity, eyes, eyes_count,
+                                eyes_rarity,
+                                head, head_count, head_rarity, neck, neck_count, neck_rarity)
+        VALUES (#{nftId}, #{rarity}, #{antisocialApeClub}, #{antisocialApeClubCount}, #{antisocialApeClubRarity},
+                #{skin}, #{skinCount}, #{skinRarity}, #{mouth}, #{mouthCount}, #{mouthRarity}, #{eyes}, #{eyesCount},
+                #{eyesRarity},
+                #{head}, #{headCount}, #{headRarity}, #{neck}, #{neckCount}, #{neckRarity});
     </insert>
 
 </mapper>

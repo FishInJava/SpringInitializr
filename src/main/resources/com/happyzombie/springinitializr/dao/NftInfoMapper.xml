@@ -5,8 +5,8 @@
     <!--todo 自动生成 时间相关属性 -->
     <insert id="insertOne"
             parameterType="com.happyzombie.springinitializr.bean.Do.NftInfoDo">
-        insert into nft_info (collection_id, nft_id, attributes)
-        VALUES (#{collectionId}, #{nftId}, #{attributes});
+        insert into nft_info (collection_id, nft_id, attributes,token_series_id,name,media)
+        VALUES (#{collectionId}, #{nftId}, #{attributes}, #{tokenSeriesId}, #{name}, #{media});
     </insert>
 
 </mapper>
