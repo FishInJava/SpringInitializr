@@ -23,3 +23,9 @@ COMMENT='单个nft信息表';
 
 
 -- nft稀有度表
+CREATE TABLE `nft_rarity` (
+                              `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+                              `nft_id` varchar(10) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '10' COMMENT '单个nft信息表中nftid',
+                              `rarity` text COLLATE utf8mb4_general_ci COMMENT '稀有度信息',
+                              PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='nft稀有度表';
