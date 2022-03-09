@@ -70,6 +70,7 @@
             apache.commons
             jsoup：解析html
             feign-form：feign 支持表单提交post
+            guava
         -->
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -95,6 +96,12 @@
             <groupId>io.github.openfeign.form</groupId>
             <artifactId>feign-form</artifactId>
             <version>3.8.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>23.0</version>
         </dependency>
 
     </dependencies>
