@@ -1,4 +1,4 @@
-package com.happyzombie.springinitializr.common;
+package com.happyzombie.springinitializr.common.util;
 
 import java.time.Instant;
 import java.time.LocalDate;

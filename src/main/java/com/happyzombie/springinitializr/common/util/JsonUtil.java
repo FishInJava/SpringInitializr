@@ -1,4 +1,4 @@
-package com.happyzombie.springinitializr.common;
+package com.happyzombie.springinitializr.common.util;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonParser;

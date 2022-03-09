@@ -1,4 +1,4 @@
-package com.happyzombie.springinitializr.common;
+package com.happyzombie.springinitializr.common.util;
 
 import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
