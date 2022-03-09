@@ -2,14 +2,21 @@ package com.happyzombie.springinitializr.common.util;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Map;
+
 @Slf4j
 public class JsonUtil {
+
+    private static class JsonUtilException extends RuntimeException {
+        public JsonUtilException() {
+            super("JsonUtil Error");
+        }
+    }
 
     private static ObjectMapper MAPPER = new ObjectMapper();
 
@@ -29,10 +36,28 @@ public class JsonUtil {
     public static <T> T jsonStringToObject(String jsonStr, Class<T> clazz) {
         try {
             return MAPPER.readValue(jsonStr, clazz);
-        } catch (JsonProcessingException e) {
-            log.error("jsonStringToObject");
+        } catch (Exception e) {
+            log.error("JsonUtil jsonStringToObject error", e);
+            throw new JsonUtilException();
         }
-        return null;
+    }
+
+    public static String objectToString(Object object){
+        try {
+            return MAPPER.writeValueAsString(object);
+        } catch (Exception e) {
+            log.error("JsonUtil objectToString error", e);
+            throw new JsonUtilException();
+        }
+    }
+
+    public static Map beanToMap(Object object) {
+        try {
+            return MAPPER.readValue(objectToString(object), Map.class);
+        } catch (Exception e) {
+            log.error("JsonUtil beanToMap error", e);
+            throw new JsonUtilException();
+        }
     }
 
 

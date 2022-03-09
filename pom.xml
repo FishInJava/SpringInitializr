@@ -72,6 +72,7 @@
             feign-form：feign 支持表单提交post
             guava
             brotli：br解压
+            feign-httpclient：feign采用jdk原生HttpURLConnection向下游服务发起http请求,引入该引用可以解决IOException: Incomplete output stream问题
         -->
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -109,6 +110,12 @@
             <groupId>org.brotli</groupId>
             <artifactId>dec</artifactId>
             <version>0.1.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.github.openfeign</groupId>
+            <artifactId>feign-httpclient</artifactId>
+            <version>11.8</version>
         </dependency>
 
     </dependencies>

@@ -25,7 +25,7 @@ public class CollectionUtil {
     }
 
     public static boolean isNotEmpty(final Collection<?> coll) {
-        return CollectionUtils.isEmpty(coll);
+        return !CollectionUtils.isEmpty(coll);
     }
 
 }
