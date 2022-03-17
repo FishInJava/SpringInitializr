@@ -3,9 +3,9 @@ package com.happyzombie.springinitializr.bean.Do;
 import lombok.Data;
 
 @Data
-public class NftInfoDo {
+public class NftInfoDO {
     private Integer id;
-    private String collectionId;
+    private String contractId;
     private String nftId;
     private String attributes;
     private String tokenSeriesId;

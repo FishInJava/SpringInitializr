@@ -4,9 +4,24 @@
 
     <!--todo 自动生成 时间相关属性 -->
     <insert id="insertOne"
-            parameterType="com.happyzombie.springinitializr.bean.Do.NftInfoDo">
-        insert into nft_info (collection_id, nft_id, attributes,token_series_id,name,media)
-        VALUES (#{collectionId}, #{nftId}, #{attributes}, #{tokenSeriesId}, #{name}, #{media});
+            parameterType="com.happyzombie.springinitializr.bean.Do.NftInfoDO">
+        insert into nft_info (contract_id, nft_id, attributes, token_series_id, name, media)
+        VALUES (#{contractId}, #{nftId}, #{attributes}, #{tokenSeriesId}, #{name}, #{media});
     </insert>
+
+    <!--todo select *-->
+    <select id="selectOne" parameterType="com.happyzombie.springinitializr.bean.Do.NftInfoDO"
+            resultType="com.happyzombie.springinitializr.bean.Do.NftInfoDO">
+        select
+            `id`,
+            `contract_id` contractId,
+            `nft_id` nftId,
+            `attributes`,
+            `token_series_id` tokenSeriesId,
+            `name`,
+            `media`
+        from nft_info
+        where token_series_id = #{tokenSeriesId}
+    </select>
 
 </mapper>

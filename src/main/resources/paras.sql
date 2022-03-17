@@ -28,6 +28,7 @@ CREATE TABLE `nft_info` (
 CREATE TABLE `nft_rarity` (
                               `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
                               `nft_id` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '单个nft信息表中nftid',
+                              `token_series_id` varchar(10) COLLATE utf8mb4_general_ci DEFAULT NULL,
                               `rarity` text COLLATE utf8mb4_general_ci COMMENT '稀有度信息',
                               `antisocial_ape_club` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
                               `antisocial_ape_club_count` int(11) DEFAULT NULL,

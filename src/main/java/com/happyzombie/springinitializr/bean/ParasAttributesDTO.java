@@ -8,7 +8,7 @@ import java.util.List;
 
 @NoArgsConstructor
 @Data
-public class ParasAttributesDto {
+public class ParasAttributesDTO {
     @JsonProperty("status")
     private Integer status;
     @JsonProperty("data")

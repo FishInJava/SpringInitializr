@@ -1,10 +1,12 @@
 package com.happyzombie.springinitializr.dao;
 
 
-import com.happyzombie.springinitializr.bean.Do.NftRarityDo;
+import com.happyzombie.springinitializr.bean.Do.NftRarityDO;
 
 public interface NftRarityMapper {
 
-    void insertOne(NftRarityDo nftRarityDo);
+    void insertOne(NftRarityDO nftRarityDo);
+
+    NftRarityDO selectOne(NftRarityDO nftInfoDo);
 
 }

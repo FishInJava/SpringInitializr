@@ -5,9 +5,10 @@ import lombok.Data;
 import java.math.BigDecimal;
 
 @Data
-public class NftRarityDo {
+public class NftRarityDO {
     private Integer id;
     private String nftId;
+    private String tokenSeriesId;
     private String rarity;
     private String antisocialApeClub;
     private Integer antisocialApeClubCount;
@@ -27,4 +28,7 @@ public class NftRarityDo {
     private String neck;
     private Integer neckCount;
     private BigDecimal neckRarity;
+    private String earrings;
+    private Integer earringsCount;
+    private BigDecimal earringsRarity;
 }

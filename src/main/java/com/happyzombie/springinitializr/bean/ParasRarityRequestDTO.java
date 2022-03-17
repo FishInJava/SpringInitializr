@@ -8,7 +8,7 @@ import java.util.List;
 
 @NoArgsConstructor
 @Data
-public class ParasRarityRequestDto {
+public class ParasRarityRequestDTO {
     @JsonProperty("collection_id")
     private String collectionId;
     @JsonProperty("attributes")

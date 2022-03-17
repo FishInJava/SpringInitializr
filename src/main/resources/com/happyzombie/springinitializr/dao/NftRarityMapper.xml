@@ -4,16 +4,52 @@
 
     <!--todo 自动生成 时间相关属性 -->
     <insert id="insertOne"
-            parameterType="com.happyzombie.springinitializr.bean.Do.NftRarityDo">
-        insert into nft_rarity (nft_id, rarity, antisocial_ape_club, antisocial_ape_club_count,
+            parameterType="com.happyzombie.springinitializr.bean.Do.NftRarityDO">
+        insert into nft_rarity (nft_id, token_series_id, rarity, antisocial_ape_club, antisocial_ape_club_count,
                                 antisocial_ape_club_rarity,
                                 skin, skin_count, skin_rarity, mouth, mouth_count, mouth_rarity, eyes, eyes_count,
                                 eyes_rarity,
-                                head, head_count, head_rarity, neck, neck_count, neck_rarity)
-        VALUES (#{nftId}, #{rarity}, #{antisocialApeClub}, #{antisocialApeClubCount}, #{antisocialApeClubRarity},
+                                head, head_count, head_rarity, neck, neck_count, neck_rarity, earrings, earrings_count,
+                                earrings_rarity)
+        VALUES (#{nftId}, #{tokenSeriesId}, #{rarity}, #{antisocialApeClub}, #{antisocialApeClubCount},
+                #{antisocialApeClubRarity},
                 #{skin}, #{skinCount}, #{skinRarity}, #{mouth}, #{mouthCount}, #{mouthRarity}, #{eyes}, #{eyesCount},
                 #{eyesRarity},
-                #{head}, #{headCount}, #{headRarity}, #{neck}, #{neckCount}, #{neckRarity});
+                #{head}, #{headCount}, #{headRarity}, #{neck}, #{neckCount}, #{neckRarity}, #{earrings}, #{earringsCount},
+                #{earringsRarity});
     </insert>
+
+    <!--todo select *-->
+    <select id="selectOne" parameterType="com.happyzombie.springinitializr.bean.Do.NftRarityDO"
+            resultType="com.happyzombie.springinitializr.bean.Do.NftRarityDO">
+        select
+            `id`,
+            `nft_id` nftId,
+            `token_series_id` tokenSeriesId,
+            `rarity`,
+            `antisocial_ape_club` antisocialApeClub,
+            `antisocial_ape_club_count` antisocialApeClubCount,
+            `antisocial_ape_club_rarity` antisocialApeClubRarity,
+            `skin`,
+            `skin_count` skinCount,
+            `skin_rarity` skinRarity,
+            `mouth`,
+            `mouth_count` mouthCount,
+            `mouth_rarity` mouthRarity,
+            `eyes`,
+            `eyes_count` eyesCount,
+            `eyes_rarity`,
+            `head`,
+            `head_count` headCount,
+            `head_rarity` headRarity,
+            `neck`,
+            `neck_count` neckCount,
+            `neck_rarity` neckRarity,
+            `earrings`,
+            `earrings_count` earringsCount,
+            `earrings_rarity` earringsRarity
+        from nft_rarity
+        where token_series_id = #{tokenSeriesId}
+    </select>
 
 </mapper>

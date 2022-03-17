@@ -9,7 +9,7 @@ import java.util.List;
 
 @NoArgsConstructor
 @Data
-public class ParasRarityResponseDto {
+public class ParasRarityResponseDTO {
     @JsonProperty("status")
     private Integer status;
     @JsonProperty("data")
