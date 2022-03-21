@@ -1,5 +1,6 @@
-package com.happyzombie.springinitializr.api;
+package com.happyzombie.springinitializr.api.socket.handler;
 
+import com.happyzombie.springinitializr.api.WampMessageCodes;
 import com.happyzombie.springinitializr.common.util.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 
@@ -8,11 +9,11 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
 @Slf4j
-public class HelloHandler implements SocketResponseHandler {
+public class WelComeHandler implements SocketResponseHandler {
     private Lock lock;
     private Condition con;
 
-    public HelloHandler(Lock lock, Condition con) {
+    public WelComeHandler(Lock lock, Condition con) {
         this.lock = lock;
         this.con = con;
     }

@@ -1,11 +1,9 @@
 package com.happyzombie.springinitializr;
 
-import com.happyzombie.springinitializr.api.NearExplorerBackendService;
+import com.happyzombie.springinitializr.service.NearExplorerBackendService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import java.math.BigInteger;
 
 @SpringBootTest
 class SpringInitializrApplicationTests {
@@ -15,8 +13,7 @@ class SpringInitializrApplicationTests {
 
     @Test
     void contextLoads() {
-        final BigInteger bigInteger = new BigInteger("1646907653388");
-        nearExplorerBackendService.getTransactionsListByAccountId("witt.near", bigInteger, 0);
+        nearExplorerBackendService.getTransactionsListByAccountId("witt.near", 1646907653388L, 0);
     }
 
 }

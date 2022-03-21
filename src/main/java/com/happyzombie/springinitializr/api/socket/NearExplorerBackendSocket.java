@@ -1,5 +1,8 @@
-package com.happyzombie.springinitializr.api;
+package com.happyzombie.springinitializr.api.socket;
 
+import com.happyzombie.springinitializr.api.socket.handler.SocketResponseHandler;
+import com.happyzombie.springinitializr.api.socket.handler.TransactionsListByAccountIdResponseHandler;
+import com.happyzombie.springinitializr.api.socket.handler.WelComeHandler;
 import com.happyzombie.springinitializr.common.bean.WebBrowserConstant;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -67,7 +70,7 @@ public class NearExplorerBackendSocket {
     /**
      * 处理器
      */
-    private static final List<SocketResponseHandler> HANDLERS = Arrays.asList(new HelloHandler(LOCK, WAIT_FOR_WELCOME), new TransactionsListByAccountIdResponseHandler());
+    private static final List<SocketResponseHandler> HANDLERS = Arrays.asList(new WelComeHandler(LOCK, WAIT_FOR_WELCOME), new TransactionsListByAccountIdResponseHandler());
 
     /**
      * Accept-Encoding:gzip, deflate, br
