@@ -37,12 +37,13 @@
     <dependencies>
 
         <!--
-            启动器
+           启动器
            spring boot starter
            starter test
            starter web:内嵌tomcat
            starter openfeign
            mybatis
+           websocket
          -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -71,8 +72,16 @@
             <version>2.0.1</version>
         </dependency>
 
+        <!--websocket-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
+
         <!--
             三方件
+            Java-WebSocket
+            lang3
             lombok
             apache.commons
             jsoup：解析html
@@ -81,6 +90,19 @@
             brotli：br解压
             feign-httpclient：feign采用jdk原生HttpURLConnection向下游服务发起http请求,引入该引用可以解决IOException: Incomplete output stream问题
         -->
+        <!--websocket作为客户端-->
+        <dependency>
+            <groupId>org.java-websocket</groupId>
+            <artifactId>Java-WebSocket</artifactId>
+            <version>1.4.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.12.0</version>
+        </dependency>
+
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>

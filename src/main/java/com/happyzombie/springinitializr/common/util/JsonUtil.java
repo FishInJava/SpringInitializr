@@ -7,6 +7,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import lombok.extern.slf4j.Slf4j;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -42,13 +46,50 @@ public class JsonUtil {
         }
     }
 
-    public static String objectToString(Object object){
+    public static String objectToString(Object object) {
         try {
             return MAPPER.writeValueAsString(object);
         } catch (Exception e) {
             log.error("JsonUtil objectToString error", e);
             throw new JsonUtilException();
         }
+    }
+
+    public static String arrayToString(Object... array) {
+        return objectToString(array);
+    }
+
+    public static LinkedList<Object> jsonStringToList(String jsonStr) {
+        try {
+            final Object[] objectList = MAPPER.readValue(jsonStr, Object[].class);
+            return new LinkedList<>(Arrays.asList(objectList));
+        } catch (Exception e) {
+            log.error("JsonUtil jsonStringToList error", e);
+            throw new JsonUtilException();
+        }
+    }
+
+    public static <T> LinkedList<T> jsonStringToList(String jsonStr, Class<T> clazz) {
+        try {
+            T[] arr = (T[]) Array.newInstance(clazz, 1);
+            final T[] object = (T[]) MAPPER.readValue(jsonStr, arr.getClass());
+            return new LinkedList<T>(Arrays.asList(object));
+        } catch (Exception e) {
+            log.error("JsonUtil jsonStringToList error", e);
+            throw new JsonUtilException();
+        }
+    }
+
+    /**
+     * 很常见场景：list<Map> 转换成 list<T>
+     *
+     * @param mapList mapList
+     * @param clazz   clazz
+     * @param <T>     t
+     * @return list<T>
+     */
+    public static <T> LinkedList<T> mapListToObjectList(List<Map> mapList, Class<T> clazz) {
+        return jsonStringToList(JsonUtil.objectToString(mapList), clazz);
     }
 
     public static Map beanToMap(Object object) {
