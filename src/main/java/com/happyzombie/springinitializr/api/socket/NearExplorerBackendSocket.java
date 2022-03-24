@@ -11,11 +11,14 @@ import org.java_websocket.drafts.Draft_6455;
 import org.java_websocket.extensions.IExtension;
 import org.java_websocket.handshake.ServerHandshake;
 import org.java_websocket.protocols.Protocol;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import sun.audio.AudioPlayer;
 
-import java.io.FileInputStream;
+import java.applet.Applet;
+import java.applet.AudioClip;
+import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
@@ -35,7 +38,7 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 @Slf4j
 @Component
-public class NearExplorerBackendSocket {
+public class NearExplorerBackendSocket implements InitializingBean {
 
     @Value("${near.explorer.backend.mainnet.ws}")
     String backendWsUri;
@@ -46,11 +49,19 @@ public class NearExplorerBackendSocket {
     private static final Condition WAIT_FOR_WELCOME = LOCK.newCondition();
 
     // todo 考虑使用合成音
-    private static String VOICE_PATCH = "src/main/resources/未识别场景.wav";
+    private static AudioClip audioClip = null;
+
+    static {
+        try {
+            audioClip = Applet.newAudioClip(new File("src/main/resources/未识别场景.wav").toURI().toURL());
+        } catch (Throwable e) {
+            log.error("audioClip error", e);
+        }
+    }
 
     @SneakyThrows
     private void sound() {
-        AudioPlayer.player.start(new FileInputStream(VOICE_PATCH));
+        audioClip.play();
     }
 
     // 不考虑多线程
@@ -67,10 +78,22 @@ public class NearExplorerBackendSocket {
     // wamp规则，第一个1表示sayhello
     public static String HELLO_MESSAGE = "[1,\"near-explorer\",{\"roles\":{\"caller\":{\"features\":{\"caller_identification\":true,\"call_canceling\":true,\"progressive_call_results\":true}},\"callee\":{\"features\":{\"caller_identification\":true,\"pattern_based_registration\":true,\"shared_registration\":true,\"progressive_call_results\":true,\"registration_revocation\":true}},\"publisher\":{\"features\":{\"publisher_identification\":true,\"subscriber_blackwhite_listing\":true,\"publisher_exclusion\":true}},\"subscriber\":{\"features\":{\"publisher_identification\":true,\"pattern_based_subscription\":true,\"subscription_revocation\":true}}}}]";
 
+    @Autowired
+    TransactionsListByAccountIdResponseHandler transactionsListByAccountIdResponseHandler;
+
     /**
      * 处理器
      */
-    private static final List<SocketResponseHandler> HANDLERS = Arrays.asList(new WelComeHandler(LOCK, WAIT_FOR_WELCOME), new TransactionsListByAccountIdResponseHandler());
+    private List<SocketResponseHandler> handlers = null;
+
+    @Override
+    public void afterPropertiesSet() {
+        if (transactionsListByAccountIdResponseHandler != null) {
+            handlers = Arrays.asList(new WelComeHandler(LOCK, WAIT_FOR_WELCOME), transactionsListByAccountIdResponseHandler);
+        } else {
+            log.error("transactionsListByAccountIdResponseHandler is null");
+        }
+    }
 
     /**
      * Accept-Encoding:gzip, deflate, br
@@ -147,7 +170,7 @@ public class NearExplorerBackendSocket {
                 @Override
                 public void onMessage(String response) {
 
-                    final boolean anyMatch = HANDLERS.stream().anyMatch(socketResponseHandler -> {
+                    final boolean anyMatch = handlers.stream().anyMatch(socketResponseHandler -> {
                         if (socketResponseHandler.isMatch(response)) {
                             socketResponseHandler.handler(response);
                             return true;
@@ -219,5 +242,6 @@ public class NearExplorerBackendSocket {
         }
         return null;
     }
+
 
 }

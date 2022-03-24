@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.happyzombie.springinitializr.dao.TransactionsEntityMapper">
+    <resultMap id="BaseResultMap" type="com.happyzombie.springinitializr.bean.entity.TransactionsEntity">
+        <constructor>
+            <idArg column="hash" javaType="java.lang.String" jdbcType="VARCHAR"/>
+            <arg column="signer_account_id" javaType="java.lang.String" jdbcType="VARCHAR"/>
+            <arg column="receiver_account_id" javaType="java.lang.String" jdbcType="VARCHAR"/>
+            <arg column="block_timestamp" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+            <arg column="included_in_block_hash" javaType="java.lang.String" jdbcType="VARCHAR"/>
+            <arg column="index_in_chunk" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+        </constructor>
+    </resultMap>
+    <sql id="Base_Column_List">
+        hash
+        , signer_account_id, receiver_account_id, block_timestamp, included_in_block_hash,
+    index_in_chunk
+    </sql>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from transactions
+        where hash = #{hash,jdbcType=VARCHAR}
+    </select>
+
+    <select id="selectOne" resultMap="BaseResultMap"
+            parameterType="com.happyzombie.springinitializr.bean.entity.TransactionsEntity">
+        select
+        <include refid="Base_Column_List"/>
+        from transactions
+        where hash = #{hash,jdbcType=VARCHAR}
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+        delete
+        from transactions
+        where hash = #{hash,jdbcType=VARCHAR}
+    </delete>
+    <insert id="insert" parameterType="com.happyzombie.springinitializr.bean.entity.TransactionsEntity">
+        insert into transactions (hash, signer_account_id, receiver_account_id,
+                                  block_timestamp, included_in_block_hash, index_in_chunk)
+        values (#{hash,jdbcType=VARCHAR}, #{signerAccountId,jdbcType=VARCHAR}, #{receiverAccountId,jdbcType=VARCHAR},
+                #{blockTimestamp,jdbcType=INTEGER}, #{includedInBlockHash,jdbcType=VARCHAR},
+                #{indexInChunk,jdbcType=INTEGER})
+    </insert>
+
+    <insert id="insertSelective" parameterType="com.happyzombie.springinitializr.bean.entity.TransactionsEntity">
+        insert into transactions
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="hash != null">
+                hash,
+            </if>
+            <if test="signerAccountId != null">
+                signer_account_id,
+            </if>
+            <if test="receiverAccountId != null">
+                receiver_account_id,
+            </if>
+            <if test="blockTimestamp != null">
+                block_timestamp,
+            </if>
+            <if test="includedInBlockHash != null">
+                included_in_block_hash,
+            </if>
+            <if test="indexInChunk != null">
+                index_in_chunk,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="hash != null">
+                #{hash,jdbcType=VARCHAR},
+            </if>
+            <if test="signerAccountId != null">
+                #{signerAccountId,jdbcType=VARCHAR},
+            </if>
+            <if test="receiverAccountId != null">
+                #{receiverAccountId,jdbcType=VARCHAR},
+            </if>
+            <if test="blockTimestamp != null">
+                #{blockTimestamp,jdbcType=INTEGER},
+            </if>
+            <if test="includedInBlockHash != null">
+                #{includedInBlockHash,jdbcType=VARCHAR},
+            </if>
+            <if test="indexInChunk != null">
+                #{indexInChunk,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective"
+            parameterType="com.happyzombie.springinitializr.bean.entity.TransactionsEntity">
+        update transactions
+        <set>
+            <if test="signerAccountId != null">
+                signer_account_id = #{signerAccountId,jdbcType=VARCHAR},
+            </if>
+            <if test="receiverAccountId != null">
+                receiver_account_id = #{receiverAccountId,jdbcType=VARCHAR},
+            </if>
+            <if test="blockTimestamp != null">
+                block_timestamp = #{blockTimestamp,jdbcType=INTEGER},
+            </if>
+            <if test="includedInBlockHash != null">
+                included_in_block_hash = #{includedInBlockHash,jdbcType=VARCHAR},
+            </if>
+            <if test="indexInChunk != null">
+                index_in_chunk = #{indexInChunk,jdbcType=INTEGER},
+            </if>
+        </set>
+        where hash = #{hash,jdbcType=VARCHAR}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.happyzombie.springinitializr.bean.entity.TransactionsEntity">
+        update transactions
+        set signer_account_id      = #{signerAccountId,jdbcType=VARCHAR},
+            receiver_account_id    = #{receiverAccountId,jdbcType=VARCHAR},
+            block_timestamp        = #{blockTimestamp,jdbcType=INTEGER},
+            included_in_block_hash = #{includedInBlockHash,jdbcType=VARCHAR},
+            index_in_chunk         = #{indexInChunk,jdbcType=INTEGER}
+        where hash = #{hash,jdbcType=VARCHAR}
+    </update>
+</mapper>

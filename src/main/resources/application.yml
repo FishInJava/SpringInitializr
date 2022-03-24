@@ -1,9 +1,13 @@
 server:
   #端口号
   port: 8080
-#logging:
-#  level:
-#    org.hbserver.client.*: debug
+logging:
+  level:
+    com:
+      happyzombie:
+        springinitializr:
+          feignclient:
+    .*: debug
 
 
 

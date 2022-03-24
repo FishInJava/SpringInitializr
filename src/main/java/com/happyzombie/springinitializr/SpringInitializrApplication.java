@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @SpringBootApplication
-@EnableFeignClients
+@EnableFeignClients(basePackages = "com.happyzombie.springinitializr.feignclient")
 @MapperScan({"com.happyzombie.springinitializr.dao"})
 public class SpringInitializrApplication {
 

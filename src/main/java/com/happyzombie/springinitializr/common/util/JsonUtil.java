@@ -5,6 +5,8 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Array;
@@ -99,6 +101,14 @@ public class JsonUtil {
             log.error("JsonUtil beanToMap error", e);
             throw new JsonUtilException();
         }
+    }
+
+    public static ObjectNode getObjectNode() {
+        return MAPPER.createObjectNode();
+    }
+
+    public static ArrayNode getArrayNode() {
+        return MAPPER.createArrayNode();
     }
 
 

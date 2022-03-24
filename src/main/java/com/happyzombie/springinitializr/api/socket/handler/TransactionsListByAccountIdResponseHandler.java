@@ -3,23 +3,25 @@ package com.happyzombie.springinitializr.api.socket.handler;
 import com.happyzombie.springinitializr.api.TransactionBaseInfo;
 import com.happyzombie.springinitializr.api.WampMessageCodes;
 import com.happyzombie.springinitializr.common.util.JsonUtil;
+import com.happyzombie.springinitializr.service.GetAllTransactionService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 @Slf4j
+@Service
 public class TransactionsListByAccountIdResponseHandler implements SocketResponseHandler {
     /**
      * 自定义接口id
      */
     public static Integer ID = 1;
 
-    /**
-     * @param response
-     * @return
-     */
+    @Autowired
+    GetAllTransactionService getAllTransactionService;
 
     @Override
     public boolean isMatch(String response) {
@@ -41,6 +43,7 @@ public class TransactionsListByAccountIdResponseHandler implements SocketRespons
             final Object mapList = ((List) o).get(0);
             final LinkedList<TransactionBaseInfo> transactionBaseInfos = JsonUtil.mapListToObjectList((List<Map>) mapList, TransactionBaseInfo.class);
             log.info("transactionBaseInfos  {}", transactionBaseInfos);
+            getAllTransactionService.addTask(response);
         }
     }
 }

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.happyzombie.springinitializr.dao.TransactionActionsEntityMapper">
+  <resultMap id="BaseResultMap" type="com.happyzombie.springinitializr.bean.entity.TransactionActionsEntity">
+    <constructor>
+      <idArg column="transaction_hash" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="action_kind" javaType="java.lang.String" jdbcType="VARCHAR" />
+    </constructor>
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.happyzombie.springinitializr.bean.entity.TransactionActionsEntity">
+    <constructor>
+      <idArg column="transaction_hash" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="action_kind" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="args" javaType="java.lang.String" jdbcType="LONGVARCHAR" />
+    </constructor>
+  </resultMap>
+  <sql id="Base_Column_List">
+    transaction_hash, action_kind
+  </sql>
+  <sql id="Blob_Column_List">
+    args
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from transaction_actions
+    where transaction_hash = #{transactionHash,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from transaction_actions
+    where transaction_hash = #{transactionHash,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.happyzombie.springinitializr.bean.entity.TransactionActionsEntity">
+    insert into transaction_actions (transaction_hash, action_kind, args
+      )
+    values (#{transactionHash,jdbcType=VARCHAR}, #{actionKind,jdbcType=VARCHAR}, #{args,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.happyzombie.springinitializr.bean.entity.TransactionActionsEntity">
+    insert into transaction_actions
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="transactionHash != null">
+        transaction_hash,
+      </if>
+      <if test="actionKind != null">
+        action_kind,
+      </if>
+      <if test="args != null">
+        args,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="transactionHash != null">
+        #{transactionHash,jdbcType=VARCHAR},
+      </if>
+      <if test="actionKind != null">
+        #{actionKind,jdbcType=VARCHAR},
+      </if>
+      <if test="args != null">
+        #{args,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.happyzombie.springinitializr.bean.entity.TransactionActionsEntity">
+    update transaction_actions
+    <set>
+      <if test="actionKind != null">
+        action_kind = #{actionKind,jdbcType=VARCHAR},
+      </if>
+      <if test="args != null">
+        args = #{args,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where transaction_hash = #{transactionHash,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.happyzombie.springinitializr.bean.entity.TransactionActionsEntity">
+    update transaction_actions
+    set action_kind = #{actionKind,jdbcType=VARCHAR},
+      args = #{args,jdbcType=LONGVARCHAR}
+    where transaction_hash = #{transactionHash,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.happyzombie.springinitializr.bean.entity.TransactionActionsEntity">
+    update transaction_actions
+    set action_kind = #{actionKind,jdbcType=VARCHAR}
+    where transaction_hash = #{transactionHash,jdbcType=VARCHAR}
+  </update>
+</mapper>

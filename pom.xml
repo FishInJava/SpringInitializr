@@ -14,7 +14,7 @@
     <name>SpringInitializr</name>
     <description>SpringInitializr</description>
     <properties>
-        <java.version>1.8</java.version>
+        <java.version>11</java.version>
         <spring-cloud.version>2020.0.3</spring-cloud.version>
     </properties>
 
@@ -80,6 +80,7 @@
 
         <!--
             三方件
+            jsonrpc4j：JSON RPC 2.0
             Java-WebSocket
             lang3
             lombok
@@ -90,7 +91,20 @@
             brotli：br解压
             feign-httpclient：feign采用jdk原生HttpURLConnection向下游服务发起http请求,引入该引用可以解决IOException: Incomplete output stream问题
         -->
-        <!--websocket作为客户端-->
+        <!-- https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp -->
+        <!--        <dependency>-->
+        <!--            <groupId>com.squareup.okhttp3</groupId>-->
+        <!--            <artifactId>okhttp</artifactId>-->
+        <!--            <version>5.0.0-alpha.2</version>-->
+        <!--        </dependency>-->
+
+        <!--        <dependency>-->
+        <!--            <groupId>com.github.briandilley.jsonrpc4j</groupId>-->
+        <!--            <artifactId>jsonrpc4j</artifactId>-->
+        <!--            <version>1.6</version>-->
+        <!--        </dependency>-->
+
+        <!--        &lt;!&ndash;websocket作为客户端&ndash;&gt;-->
         <dependency>
             <groupId>org.java-websocket</groupId>
             <artifactId>Java-WebSocket</artifactId>
@@ -181,11 +195,32 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>11</source>
+                    <target>11</target>
                     <encoding>UTF-8</encoding>
                     <compilerArgument>-Xlint:unchecked</compilerArgument>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.mybatis.generator</groupId>
+                <artifactId>mybatis-generator-maven-plugin</artifactId>
+                <version>1.4.1</version>
+                <configuration>
+                    <!-- 在控制台打印执行日志 -->
+                    <verbose>true</verbose>
+                    <!-- 重复生成时会覆盖之前的文件-->
+                    <overwrite>true</overwrite>
+                    <configurationFile>src/main/resources/generatorConfig.xml</configurationFile>
+                </configuration>
+                <!-- 数据库连接选择8.0以上的，因为用的mysql8.0-->
+                <dependencies>
+                    <dependency>
+                        <groupId>mysql</groupId>
+                        <artifactId>mysql-connector-java</artifactId>
+                        <version>8.0.16</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>
