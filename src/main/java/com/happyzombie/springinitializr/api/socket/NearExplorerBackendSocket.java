@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -43,7 +44,7 @@ public class NearExplorerBackendSocket implements InitializingBean {
     @Value("${near.explorer.backend.mainnet.ws}")
     String backendWsUri;
 
-    private static WebSocketClient client = null;
+    private static volatile WebSocketClient client = null;
 
     private static final Lock LOCK = new ReentrantLock();
     private static final Condition WAIT_FOR_WELCOME = LOCK.newCondition();
@@ -64,18 +65,29 @@ public class NearExplorerBackendSocket implements InitializingBean {
         audioClip.play();
     }
 
-    // 不考虑多线程
+    /**
+     * 获取连接
+     *
+     * @return WebSocketClient
+     */
     public WebSocketClient getWebSocket() {
-
         if (client == null || client.isClosed()) {
-            // 这个方法搞成一个如果返回空，就park，当有值时就unpark
-            // 条件执行：unpark条件是收到welcome
-            client = getClient(backendWsUri);
+            synchronized (NearExplorerBackendSocket.class) {
+                if (client == null || client.isClosed()) {
+                    // 这个方法搞成一个如果返回空，就park，当有值时就unpark
+                    // 条件执行：unpark条件是收到welcome
+                    client = getClient(backendWsUri);
+                }
+            }
         }
-        return client;
+        return Optional.ofNullable(client).orElseThrow(() -> new RuntimeException("与near-backend建立webSocket失败"));
     }
 
-    // wamp规则，第一个1表示sayhello
+    /**
+     * wamp规则，第一个1表示sayhello
+     *
+     * @see com.happyzombie.springinitializr.api.WampMessageCodes
+     */
     public static String HELLO_MESSAGE = "[1,\"near-explorer\",{\"roles\":{\"caller\":{\"features\":{\"caller_identification\":true,\"call_canceling\":true,\"progressive_call_results\":true}},\"callee\":{\"features\":{\"caller_identification\":true,\"pattern_based_registration\":true,\"shared_registration\":true,\"progressive_call_results\":true,\"registration_revocation\":true}},\"publisher\":{\"features\":{\"publisher_identification\":true,\"subscriber_blackwhite_listing\":true,\"publisher_exclusion\":true}},\"subscriber\":{\"features\":{\"publisher_identification\":true,\"pattern_based_subscription\":true,\"subscription_revocation\":true}}}}]";
 
     @Autowired

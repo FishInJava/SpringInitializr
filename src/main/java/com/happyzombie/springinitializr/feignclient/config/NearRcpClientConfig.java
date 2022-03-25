@@ -1,4 +1,4 @@
-package com.happyzombie.springinitializr.service;
+package com.happyzombie.springinitializr.feignclient.config;
 
 import com.happyzombie.springinitializr.feignclient.ClientInterceptor;
 import feign.RequestTemplate;

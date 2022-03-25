@@ -39,11 +39,13 @@ public class TransactionsListByAccountIdResponseHandler implements SocketRespons
         final LinkedList<Object> objectList = JsonUtil.jsonStringToList(response);
         final Object o = objectList.get(3);
         if (o instanceof List) {
-            // List<Map>
+            // 结果是List<Map>
             final Object mapList = ((List) o).get(0);
             final LinkedList<TransactionBaseInfo> transactionBaseInfos = JsonUtil.mapListToObjectList((List<Map>) mapList, TransactionBaseInfo.class);
-            log.info("transactionBaseInfos  {}", transactionBaseInfos);
-            getAllTransactionService.addTask(response);
+            if (log.isDebugEnabled()) {
+                log.debug("transactionBaseInfos  {}", transactionBaseInfos);
+            }
+            getAllTransactionService.addTask(transactionBaseInfos);
         }
     }
 }

@@ -50,9 +50,9 @@ import java.net.UnknownHostException;
 @Slf4j
 public class NearRpcService {
     @Value("#{'${near.server.ssl.protocol}'.split(',')}")
-    String[] nearSupportProtocols;
+    private String[] nearSupportProtocols;
     @Value("${nearcore.rpc.mainnet}")
-    String mainNet;
+    private String mainNet;
     @Value("${proxy.host}")
     private String proxyHost;
     @Value("${proxy.port}")

@@ -23,6 +23,7 @@ public class NearExplorerBackendService {
 
     /**
      * 间接查询backend项目的DS_INDEXER_BACKEND数据库，获取用户Transaction记录
+     * [48,24,{},"com.nearprotocol.mainnet.explorer.transactions-list-by-account-id",["witt.near",10,{"endTimestamp":1647617270775,"transactionIndex":2}]]
      *
      * @param accountId        accountId
      * @param endTimestamp     endTimestamp
@@ -37,6 +38,16 @@ public class NearExplorerBackendService {
         nearBackendRequest.setApiName(getTransactionsListByAccountId);
         nearBackendRequest.setArguments(accountId, 15, endTimestamp == null ? null : new TransactionPagination(endTimestamp, transactionIndex));
         webSocket.send(nearBackendRequest.toRequestJson());
+    }
+
+    /**
+     * 获取最新的交易列表
+     * [48,3,{},"com.nearprotocol.mainnet.explorer.transactions-list-by-account-id",["witt.near",10,null]]
+     *
+     * @param accountId accountId
+     */
+    public void getNewestTransactionsListByAccountId(String accountId) {
+        getTransactionsListByAccountId(accountId, null, null);
     }
 
     /**
@@ -56,7 +67,8 @@ public class NearExplorerBackendService {
      * -每个用户数据查询是串行，不同用户间的数据同步要并行，所以使用TransactionsListByAccountIdResponseHandler.ID的设计方式不合理
      */
     public void updateTransactionInfoByAccountId(String accountId) {
-        //
+        
     }
+
 
 }

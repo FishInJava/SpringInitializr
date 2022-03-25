@@ -3,17 +3,18 @@
 <mapper namespace="com.happyzombie.springinitializr.dao.TransactionsEntityMapper">
     <resultMap id="BaseResultMap" type="com.happyzombie.springinitializr.bean.entity.TransactionsEntity">
         <constructor>
-            <idArg column="hash" javaType="java.lang.String" jdbcType="VARCHAR"/>
+            <idArg column="id" javaType="java.lang.Long" jdbcType="BIGINT"/>
+            <arg column="hash" javaType="java.lang.String" jdbcType="VARCHAR"/>
             <arg column="signer_account_id" javaType="java.lang.String" jdbcType="VARCHAR"/>
             <arg column="receiver_account_id" javaType="java.lang.String" jdbcType="VARCHAR"/>
-            <arg column="block_timestamp" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+            <arg column="block_timestamp" javaType="java.lang.Long" jdbcType="BIGINT"/>
             <arg column="included_in_block_hash" javaType="java.lang.String" jdbcType="VARCHAR"/>
             <arg column="index_in_chunk" javaType="java.lang.Integer" jdbcType="INTEGER"/>
         </constructor>
     </resultMap>
     <sql id="Base_Column_List">
-        hash
-        , signer_account_id, receiver_account_id, block_timestamp, included_in_block_hash,
+        id
+        ,hash, signer_account_id, receiver_account_id, block_timestamp, included_in_block_hash,
     index_in_chunk
     </sql>
 
@@ -24,12 +25,11 @@
         where hash = #{hash,jdbcType=VARCHAR}
     </select>
 
-    <select id="selectOne" resultMap="BaseResultMap"
-            parameterType="com.happyzombie.springinitializr.bean.entity.TransactionsEntity">
+    <select id="selectOneNewestTransaction" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from transactions
-        where hash = #{hash,jdbcType=VARCHAR}
+        order by block_timestamp,id desc limit 1
     </select>
 
     <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
@@ -43,6 +43,19 @@
         values (#{hash,jdbcType=VARCHAR}, #{signerAccountId,jdbcType=VARCHAR}, #{receiverAccountId,jdbcType=VARCHAR},
                 #{blockTimestamp,jdbcType=INTEGER}, #{includedInBlockHash,jdbcType=VARCHAR},
                 #{indexInChunk,jdbcType=INTEGER})
+    </insert>
+
+    <insert id="insertList" parameterType="java.util.List">
+        insert into transactions (hash, signer_account_id, receiver_account_id,
+        block_timestamp, included_in_block_hash, index_in_chunk)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.hash}, #{item.signerAccountId}, #{item.receiverAccountId},
+            #{item.blockTimestamp}, #{item.includedInBlockHash},
+            #{item.indexInChunk}
+            )
+        </foreach>
     </insert>
 
     <insert id="insertSelective" parameterType="com.happyzombie.springinitializr.bean.entity.TransactionsEntity">
