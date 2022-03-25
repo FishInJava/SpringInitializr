@@ -25,11 +25,18 @@
         where hash = #{hash,jdbcType=VARCHAR}
     </select>
 
+    <select id="selectOneOldestTransaction" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from transactions
+        order by block_timestamp asc ,id desc limit 1;
+    </select>
+
     <select id="selectOneNewestTransaction" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from transactions
-        order by block_timestamp,id desc limit 1
+        order by block_timestamp desc ,id asc limit 1;
     </select>
 
     <delete id="deleteByPrimaryKey" parameterType="java.lang.String">

@@ -15,6 +15,13 @@ public interface TransactionsEntityMapper {
 
     TransactionsEntity selectByPrimaryKey(String hash);
 
+    /**
+     * backend返回的最新的顺序，则插入数据库中block_timestamp是最小的，id是最大的
+     *
+     * @return TransactionsEntity
+     */
+    TransactionsEntity selectOneOldestTransaction();
+
     TransactionsEntity selectOneNewestTransaction();
 
     int updateByPrimaryKeySelective(TransactionsEntity row);
