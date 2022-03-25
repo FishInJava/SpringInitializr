@@ -6,13 +6,9 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @Data
-public class ViewAccountResponse {
-    @JsonProperty("jsonrpc")
-    private String jsonrpc;
+public class ViewAccountResponse extends NearGeneralResponse {
     @JsonProperty("result")
     private ResultDTO result;
-    @JsonProperty("id")
-    private String id;
 
     @NoArgsConstructor
     @Data

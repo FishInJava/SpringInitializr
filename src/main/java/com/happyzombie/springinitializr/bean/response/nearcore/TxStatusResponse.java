@@ -9,11 +9,7 @@ import java.util.List;
 
 @NoArgsConstructor
 @Data
-public class TxStatusResponse {
-    @JsonProperty("id")
-    private String id;
-    @JsonProperty("jsonrpc")
-    private String jsonrpc;
+public class TxStatusResponse extends NearGeneralResponse {
     @JsonProperty("result")
     private ResultDTO result;
 

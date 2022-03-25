@@ -3,6 +3,7 @@ package com.happyzombie.springinitializr.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.happyzombie.springinitializr.bean.response.nearcore.NearGeneralResponse;
 import com.happyzombie.springinitializr.bean.response.nearcore.TxStatusResponse;
 import com.happyzombie.springinitializr.bean.response.nearcore.ViewAccountResponse;
 import com.happyzombie.springinitializr.common.bean.WebBrowserConstant;
@@ -198,6 +199,11 @@ public class NearRpcServiceImpl implements NearRpcService {
         return generalNearRequest("query", request, ViewAccountResponse.class);
     }
 
+    /**
+     * todo 本质是想对clazz进行限制，必须是实现NearGeneralResponse
+     * 但是使用Class<? extends NearGeneralResponse>就没有T了，返回就有问题
+     * 目前的问题： 1.强转会出问题 2.返回还要强转成T看着就不舒服
+     */
     private <T> T generalNearRequest(String methodName, JsonNode params, Class<T> clazz) {
         CloseableHttpResponse response = null;
         try {
@@ -211,9 +217,13 @@ public class NearRpcServiceImpl implements NearRpcService {
             response = onlySsl13Client.execute(httpPost);
             // 检查响应码
             checkResponseCode(response);
-            return JsonUtil.jsonStringToObject(EntityUtils.toString(response.getEntity()), clazz);
+            final NearGeneralResponse nearGeneralResponse = (NearGeneralResponse) JsonUtil.jsonStringToObject(EntityUtils.toString(response.getEntity()), clazz);
+            if (nearGeneralResponse.getError() != null) {
+                throw new RuntimeException("near rpc return error message," + nearGeneralResponse.getError());
+            }
+            return (T) nearGeneralResponse;
         } catch (Exception e) {
-            log.error("http error,{}", response, e);
+            log.error("http with near error,{}", response, e);
         } finally {
             if (response != null) {
                 try {
