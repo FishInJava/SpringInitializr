@@ -200,11 +200,9 @@ public class NearRpcServiceImpl implements NearRpcService {
     }
 
     /**
-     * todo 本质是想对clazz进行限制，必须是实现NearGeneralResponse
-     * 但是使用Class<? extends NearGeneralResponse>就没有T了，返回就有问题
-     * 目前的问题： 1.强转会出问题 2.返回还要强转成T看着就不舒服
+     * 2.(T) nearGeneralResponse写法太丑
      */
-    private <T> T generalNearRequest(String methodName, JsonNode params, Class<T> clazz) {
+    private <T extends NearGeneralResponse> T generalNearRequest(String methodName, JsonNode params, Class<T> clazz) {
         CloseableHttpResponse response = null;
         try {
             // 获取httpClient
@@ -217,11 +215,11 @@ public class NearRpcServiceImpl implements NearRpcService {
             response = onlySsl13Client.execute(httpPost);
             // 检查响应码
             checkResponseCode(response);
-            final NearGeneralResponse nearGeneralResponse = (NearGeneralResponse) JsonUtil.jsonStringToObject(EntityUtils.toString(response.getEntity()), clazz);
+            final T nearGeneralResponse = JsonUtil.jsonStringToObject(EntityUtils.toString(response.getEntity()), clazz);
             if (nearGeneralResponse.getError() != null) {
                 throw new RuntimeException("near rpc return error message," + nearGeneralResponse.getError());
             }
-            return (T) nearGeneralResponse;
+            return nearGeneralResponse;
         } catch (Exception e) {
             log.error("http with near error,{}", response, e);
         } finally {
