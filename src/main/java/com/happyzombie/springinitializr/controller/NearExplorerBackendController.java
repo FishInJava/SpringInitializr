@@ -1,6 +1,7 @@
 package com.happyzombie.springinitializr.controller;
 
 import com.happyzombie.springinitializr.bean.response.nearcore.TxStatusResponse;
+import com.happyzombie.springinitializr.bean.response.nearcore.ViewAccountResponse;
 import com.happyzombie.springinitializr.common.bean.Result;
 import com.happyzombie.springinitializr.common.util.DateUtil;
 import com.happyzombie.springinitializr.common.util.StringUtil;
@@ -46,7 +47,11 @@ public class NearExplorerBackendController {
     @CrossOrigin
     @RequestMapping(value = "/updateTransactionByAccountId/{accountId}", method = RequestMethod.GET)
     public Result<Object> updateTransactionByAccountId(@PathVariable("accountId") String accountId) {
-        nearExplorerBackendService.getNewestTransactionsListByAccountId(accountId);
+        // 账号有效性校验
+        final ViewAccountResponse viewAccountResponse = nearRpcService.viewAccount(accountId);
+        if (viewAccountResponse.getResult() != null) {
+            nearExplorerBackendService.getNewestTransactionsListByAccountId(accountId);
+        }
         return Result.successResult(true);
     }
 
