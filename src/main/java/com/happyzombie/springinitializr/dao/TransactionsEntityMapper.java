@@ -20,9 +20,9 @@ public interface TransactionsEntityMapper {
      *
      * @return TransactionsEntity
      */
-    TransactionsEntity selectOneOldestTransaction();
+    TransactionsEntity selectOneOldestTransaction(String signerId);
 
-    TransactionsEntity selectOneNewestTransaction();
+    TransactionsEntity selectOneNewestTransaction(String signerId);
 
     int updateByPrimaryKeySelective(TransactionsEntity row);
 

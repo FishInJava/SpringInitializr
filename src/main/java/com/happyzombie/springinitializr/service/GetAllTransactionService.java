@@ -3,6 +3,7 @@ package com.happyzombie.springinitializr.service;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.happyzombie.springinitializr.api.Action;
 import com.happyzombie.springinitializr.api.TransactionBaseInfo;
+import com.happyzombie.springinitializr.api.socket.handler.TransactionsListByAccountIdResponseHandler;
 import com.happyzombie.springinitializr.bean.entity.TransactionActionsEntity;
 import com.happyzombie.springinitializr.bean.entity.TransactionsEntity;
 import com.happyzombie.springinitializr.common.util.CollectionUtil;
@@ -67,7 +68,7 @@ public class GetAllTransactionService {
     /**
      * 提交查询TransactionTask
      */
-    public void addTask(LinkedList<TransactionBaseInfo> trans) {
+    public void addTask(Integer requestId, LinkedList<TransactionBaseInfo> trans) {
         if (CollectionUtil.isEmpty(trans)) {
             log.error("transactionBaseInfos is null");
             return;
@@ -92,9 +93,10 @@ public class GetAllTransactionService {
                  * 参考https://docs.near.org/docs/api/rpc
                  */
                 // todo 最后一个场景，backed返回账号的第一条交易
+                final String signerId = TransactionsListByAccountIdResponseHandler.getAccountByRequestId(requestId);
                 // 查询DB最新数据
-                final TransactionsEntity dbOldest = transactionsMapper.selectOneOldestTransaction();
-                final TransactionsEntity dbNewest = transactionsMapper.selectOneNewestTransaction();
+                final TransactionsEntity dbOldest = transactionsMapper.selectOneOldestTransaction(signerId);
+                final TransactionsEntity dbNewest = transactionsMapper.selectOneNewestTransaction(signerId);
 
                 // 如果数据库为空
                 if (dbOldest == null) {

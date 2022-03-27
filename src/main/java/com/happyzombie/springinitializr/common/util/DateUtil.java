@@ -1,7 +1,10 @@
 package com.happyzombie.springinitializr.common.util;
 
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
@@ -14,16 +17,22 @@ import java.time.format.DateTimeFormatter;
 public class DateUtil {
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    private static final ZoneOffset ZONE_OFFSET = ZoneOffset.of("+8");
+    private static final ZoneOffset CHINA_ZONE_OFFSET = ZoneOffset.of("+8");
+    private static final ZoneId CHINA_ZONE_ID = ZoneId.of("CTT", ZoneId.SHORT_IDS);
 
     public static Long dataStrToMilli(String dataStr) {
         // 格式是yyyy-MM-dd
-        return LocalDate.parse(dataStr, DateTimeFormatter.ISO_LOCAL_DATE).atStartOfDay().toInstant(ZONE_OFFSET).toEpochMilli();
+        return LocalDate.parse(dataStr, DateTimeFormatter.ISO_LOCAL_DATE).atStartOfDay().toInstant(CHINA_ZONE_OFFSET).toEpochMilli();
+    }
+
+    public static Long getCurrentTimestampMilli() {
+        final Instant ctt = Clock.system(CHINA_ZONE_ID).instant();
+        return ctt.toEpochMilli();
     }
 
     public static Long dataTimeStrToMilli(String dataStr) {
         // 格式是yyyy-MM-dd HH:mm:ss
-        return LocalDateTime.parse(dataStr, FORMATTER).toInstant(ZONE_OFFSET).toEpochMilli();
+        return LocalDateTime.parse(dataStr, FORMATTER).toInstant(CHINA_ZONE_OFFSET).toEpochMilli();
     }
 
 

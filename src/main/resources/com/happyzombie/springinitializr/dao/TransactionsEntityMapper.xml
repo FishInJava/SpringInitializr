@@ -29,6 +29,7 @@
         select
         <include refid="Base_Column_List"/>
         from transactions
+        where signer_account_id = #{0}
         order by block_timestamp asc ,id desc limit 1;
     </select>
 
@@ -36,6 +37,7 @@
         select
         <include refid="Base_Column_List"/>
         from transactions
+        where signer_account_id = #{0}
         order by block_timestamp desc ,id asc limit 1;
     </select>
 

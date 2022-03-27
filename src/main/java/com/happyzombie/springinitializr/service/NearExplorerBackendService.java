@@ -33,7 +33,7 @@ public class NearExplorerBackendService {
         final WebSocketClient webSocket = socket.getWebSocket();
         final NearBackendRequest nearBackendRequest = new NearBackendRequest();
         nearBackendRequest.setMessageType(WampMessageCodes.CALL);
-        nearBackendRequest.setRequestId(TransactionsListByAccountIdResponseHandler.ID);
+        nearBackendRequest.setRequestId(TransactionsListByAccountIdResponseHandler.getRequestId(accountId));
         nearBackendRequest.setOptions(null);
         nearBackendRequest.setApiName(getTransactionsListByAccountId);
         nearBackendRequest.setArguments(accountId, 15, endTimestamp == null ? null : new TransactionPagination(endTimestamp, transactionIndex));
@@ -67,7 +67,7 @@ public class NearExplorerBackendService {
      * -每个用户数据查询是串行，不同用户间的数据同步要并行，所以使用TransactionsListByAccountIdResponseHandler.ID的设计方式不合理
      */
     public void updateTransactionInfoByAccountId(String accountId) {
-        
+
     }
 
 
