@@ -3,6 +3,8 @@ package com.happyzombie.springinitializr.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.happyzombie.springinitializr.bean.response.nearcore.BlockDetailsResponse;
+import com.happyzombie.springinitializr.bean.response.nearcore.ChunkDetailsResponse;
 import com.happyzombie.springinitializr.bean.response.nearcore.NearGeneralResponse;
 import com.happyzombie.springinitializr.bean.response.nearcore.TxStatusResponse;
 import com.happyzombie.springinitializr.bean.response.nearcore.ViewAccountResponse;
@@ -149,6 +151,7 @@ public class NearRpcServiceImpl implements NearRpcService {
         httpPost.setHeader("host", "rpc.mainnet.near.org:443");
         httpPost.setHeader("Connection", "keep-alive");
         httpPost.setHeader("Content-Type", "application/json");
+        // 模拟postMan
         httpPost.setHeader("User-Agent", "PostmanRuntime/7.29.0");
         httpPost.setHeader("Accept-Encoding", WebBrowserConstant.ACCEPT_ENCODING);
         return httpPost;
@@ -187,6 +190,16 @@ public class NearRpcServiceImpl implements NearRpcService {
 
     /**
      * 获取Account信息
+     * {
+     * "jsonrpc": "2.0",
+     * "id": "dontcare",
+     * "method": "query",
+     * "params": {
+     * "request_type": "view_account",
+     * "finality": "final",
+     * "account_id": "nearkat.testnet"
+     * }
+     * }
      *
      * @param accountId accountId
      */
@@ -197,6 +210,34 @@ public class NearRpcServiceImpl implements NearRpcService {
         request.put("finality", "final");
         request.put("account_id", accountId);
         return generalNearRequest("query", request, ViewAccountResponse.class);
+    }
+
+    @Override
+    public BlockDetailsResponse getLatestBlockDetail() {
+        final ObjectNode request = JsonUtil.getObjectNode();
+        request.put("finality", "final");
+        return generalNearRequest("block", request, BlockDetailsResponse.class);
+    }
+
+    @Override
+    public BlockDetailsResponse getBlockDetailByBlockId(Long blockId) {
+        final ObjectNode request = JsonUtil.getObjectNode();
+        request.put("block_id", blockId);
+        return generalNearRequest("block", request, BlockDetailsResponse.class);
+    }
+
+    @Override
+    public BlockDetailsResponse getBlockDetailByBlockHash(String blockHash) {
+        final ObjectNode request = JsonUtil.getObjectNode();
+        request.put("block_id", blockHash);
+        return generalNearRequest("block", request, BlockDetailsResponse.class);
+    }
+
+    @Override
+    public ChunkDetailsResponse getChunkDetailsById(String chunkId) {
+        final ObjectNode request = JsonUtil.getObjectNode();
+        request.put("chunk_id", chunkId);
+        return generalNearRequest("chunk", request, ChunkDetailsResponse.class);
     }
 
     /**

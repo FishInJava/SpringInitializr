@@ -1,5 +1,7 @@
 package com.happyzombie.springinitializr.controller;
 
+import com.happyzombie.springinitializr.bean.response.nearcore.BlockDetailsResponse;
+import com.happyzombie.springinitializr.bean.response.nearcore.ChunkDetailsResponse;
 import com.happyzombie.springinitializr.bean.response.nearcore.TxStatusResponse;
 import com.happyzombie.springinitializr.bean.response.nearcore.ViewAccountResponse;
 import com.happyzombie.springinitializr.common.bean.Result;
@@ -62,4 +64,17 @@ public class NearExplorerBackendController {
         return Result.successResult(true);
     }
 
+    @CrossOrigin
+    @RequestMapping(value = "/getLatestBlockDetail", method = RequestMethod.GET)
+    public Result<Object> getLatestBlockDetail() {
+        final BlockDetailsResponse latestBlockDetail = nearRpcService.getLatestBlockDetail();
+        return Result.successResult(latestBlockDetail);
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/getChunkDetailsById/{chunkId}", method = RequestMethod.GET)
+    public Result<Object> getChunkDetailsById(@PathVariable("chunkId") String chunkId) {
+        final ChunkDetailsResponse latestBlockDetail = nearRpcService.getChunkDetailsById(chunkId);
+        return Result.successResult(latestBlockDetail);
+    }
 }
