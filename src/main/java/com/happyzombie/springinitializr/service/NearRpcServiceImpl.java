@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.happyzombie.springinitializr.bean.response.nearcore.BlockDetailsResponse;
 import com.happyzombie.springinitializr.bean.response.nearcore.ChunkDetailsResponse;
 import com.happyzombie.springinitializr.bean.response.nearcore.NearGeneralResponse;
+import com.happyzombie.springinitializr.bean.response.nearcore.ReceiptDetailsResponse;
 import com.happyzombie.springinitializr.bean.response.nearcore.TxStatusResponse;
 import com.happyzombie.springinitializr.bean.response.nearcore.ViewAccountResponse;
 import com.happyzombie.springinitializr.common.bean.WebBrowserConstant;
@@ -58,6 +59,8 @@ public class NearRpcServiceImpl implements NearRpcService {
     private String[] nearSupportProtocols;
     @Value("${nearcore.rpc.mainnet}")
     private String mainNet;
+    @Value("${nearcore.rpc.historical.mainnet}")
+    private String historicalMainNet;
     @Value("${proxy.host}")
     private String proxyHost;
     @Value("${proxy.port}")
@@ -157,6 +160,22 @@ public class NearRpcServiceImpl implements NearRpcService {
         return httpPost;
     }
 
+    private HttpPost getHistoricalProxyHttpPost() {
+        // 设置代理
+        final HttpHost proxy = new HttpHost(proxyHost, proxyPort);
+        RequestConfig requestConfig = RequestConfig.custom().setProxy(proxy).build();
+        HttpPost httpPost = new HttpPost(historicalMainNet);
+        httpPost.setConfig(requestConfig);
+        // setHeader
+        httpPost.setHeader("host", "archival-rpc.mainnet.near.org:443");
+        httpPost.setHeader("Connection", "keep-alive");
+        httpPost.setHeader("Content-Type", "application/json");
+        // 模拟postMan
+        httpPost.setHeader("User-Agent", "PostmanRuntime/7.29.0");
+        httpPost.setHeader("Accept-Encoding", WebBrowserConstant.ACCEPT_ENCODING);
+        return httpPost;
+    }
+
     /**
      * 通用的near request对象
      *
@@ -234,22 +253,42 @@ public class NearRpcServiceImpl implements NearRpcService {
     }
 
     @Override
+    public BlockDetailsResponse getHistoricalBlockDetailByBlockHash(String blockHash) {
+        final ObjectNode request = JsonUtil.getObjectNode();
+        request.put("block_id", blockHash);
+        return historicalNearRequest("block", request, BlockDetailsResponse.class);
+    }
+
+    @Override
     public ChunkDetailsResponse getChunkDetailsById(String chunkId) {
         final ObjectNode request = JsonUtil.getObjectNode();
         request.put("chunk_id", chunkId);
         return generalNearRequest("chunk", request, ChunkDetailsResponse.class);
     }
 
-    /**
-     * 2.(T) nearGeneralResponse写法太丑
-     */
+    @Override
+    public ReceiptDetailsResponse getReceiptById(String receiptId) {
+        final ObjectNode request = JsonUtil.getObjectNode();
+        request.put("receipt_id", receiptId);
+        return generalNearRequest("EXPERIMENTAL_receipt", request, ReceiptDetailsResponse.class);
+    }
+
     private <T extends NearGeneralResponse> T generalNearRequest(String methodName, JsonNode params, Class<T> clazz) {
+        return nearRequest(getGeneralProxyHttpPost(), methodName, params, clazz);
+    }
+
+    /**
+     * Querying historical data (older than 5 epochs or ~2.5 days)
+     */
+    private <T extends NearGeneralResponse> T historicalNearRequest(String methodName, JsonNode params, Class<T> clazz) {
+        return nearRequest(getHistoricalProxyHttpPost(), methodName, params, clazz);
+    }
+
+    private <T extends NearGeneralResponse> T nearRequest(HttpPost httpPost, String methodName, JsonNode params, Class<T> clazz) {
         CloseableHttpResponse response = null;
         try {
             // 获取httpClient
             final CloseableHttpClient onlySsl13Client = getOnlySsl13Client();
-            // 获取httpPost
-            final HttpPost httpPost = getGeneralProxyHttpPost();
             // 设置Entity
             httpPost.setEntity(getGeneralRequest(methodName, params));
             // 发送请求

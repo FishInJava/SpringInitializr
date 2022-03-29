@@ -2,6 +2,7 @@ package com.happyzombie.springinitializr.controller;
 
 import com.happyzombie.springinitializr.bean.response.nearcore.BlockDetailsResponse;
 import com.happyzombie.springinitializr.bean.response.nearcore.ChunkDetailsResponse;
+import com.happyzombie.springinitializr.bean.response.nearcore.ReceiptDetailsResponse;
 import com.happyzombie.springinitializr.bean.response.nearcore.TxStatusResponse;
 import com.happyzombie.springinitializr.bean.response.nearcore.ViewAccountResponse;
 import com.happyzombie.springinitializr.common.bean.Result;
@@ -75,6 +76,34 @@ public class NearExplorerBackendController {
     @RequestMapping(value = "/getChunkDetailsById/{chunkId}", method = RequestMethod.GET)
     public Result<Object> getChunkDetailsById(@PathVariable("chunkId") String chunkId) {
         final ChunkDetailsResponse latestBlockDetail = nearRpcService.getChunkDetailsById(chunkId);
+        return Result.successResult(latestBlockDetail);
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/getReceiptById/{receiptId}", method = RequestMethod.GET)
+    public Result<Object> getReceiptById(@PathVariable("receiptId") String receiptId) {
+        final ReceiptDetailsResponse latestBlockDetail = nearRpcService.getReceiptById(receiptId);
+        return Result.successResult(latestBlockDetail);
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/getBlockDetailByBlockHash/{blockHash}", method = RequestMethod.GET)
+    public Result<Object> getBlockDetailByBlockHash(@PathVariable("blockHash") String blockHash) {
+        final BlockDetailsResponse latestBlockDetail = nearRpcService.getBlockDetailByBlockHash(blockHash);
+        return Result.successResult(latestBlockDetail);
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/getHistoricalBlockDetailByBlockHash/{blockHash}", method = RequestMethod.GET)
+    public Result<Object> getHistoricalBlockDetailByBlockHash(@PathVariable("blockHash") String blockHash) {
+        final BlockDetailsResponse latestBlockDetail = nearRpcService.getHistoricalBlockDetailByBlockHash(blockHash);
+        return Result.successResult(latestBlockDetail);
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/getBlockDetailByBlockId/{height}", method = RequestMethod.GET)
+    public Result<Object> getBlockDetailByBlockId(@PathVariable("height") Long height) {
+        final BlockDetailsResponse latestBlockDetail = nearRpcService.getBlockDetailByBlockId(height);
         return Result.successResult(latestBlockDetail);
     }
 }

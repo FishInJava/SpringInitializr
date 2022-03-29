@@ -2,6 +2,7 @@ package com.happyzombie.springinitializr.service;
 
 import com.happyzombie.springinitializr.bean.response.nearcore.BlockDetailsResponse;
 import com.happyzombie.springinitializr.bean.response.nearcore.ChunkDetailsResponse;
+import com.happyzombie.springinitializr.bean.response.nearcore.ReceiptDetailsResponse;
 import com.happyzombie.springinitializr.bean.response.nearcore.TxStatusResponse;
 import com.happyzombie.springinitializr.bean.response.nearcore.ViewAccountResponse;
 
@@ -17,5 +18,9 @@ public interface NearRpcService {
 
     BlockDetailsResponse getBlockDetailByBlockHash(String blockHash);
 
+    BlockDetailsResponse getHistoricalBlockDetailByBlockHash(String blockHash);
+
     ChunkDetailsResponse getChunkDetailsById(String chunkId);
+
+    ReceiptDetailsResponse getReceiptById(String receiptId);
 }
