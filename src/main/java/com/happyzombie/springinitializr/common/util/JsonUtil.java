@@ -111,5 +111,13 @@ public class JsonUtil {
         return MAPPER.createArrayNode();
     }
 
+    /**
+     * 字符串替换成JsonObject
+     */
+    public static String stringReplaceToJsonObject(String source, String replace, String jsonObject) {
+        final String js = source.replace(replace, jsonObject);
+        String str1 = js.replace("\"{", "{");
+        return str1.replace("}\"", "}");
+    }
 
 }

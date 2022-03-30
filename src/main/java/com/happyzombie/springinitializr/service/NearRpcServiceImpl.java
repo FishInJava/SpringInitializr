@@ -263,7 +263,24 @@ public class NearRpcServiceImpl implements NearRpcService {
     public ChunkDetailsResponse getChunkDetailsById(String chunkId) {
         final ObjectNode request = JsonUtil.getObjectNode();
         request.put("chunk_id", chunkId);
-        return generalNearRequest("chunk", request, ChunkDetailsResponse.class);
+        try {
+            final String chunkString = nearRequest(getGeneralProxyHttpPost(), "chunk", request);
+            // 返回的结果里面List<Action>是不规则的，有字符串，又有对象；如果有字符串，替换成对象
+            ChunkDetailsResponse chunkDetailsResponse;
+            if (chunkString.contains("CreateAccount")) {
+                final String result = JsonUtil.stringReplaceToJsonObject(chunkString, "CreateAccount", "{\"CreateAccount\": \"CreateAccount\"}");
+                chunkDetailsResponse = JsonUtil.jsonStringToObject(result, ChunkDetailsResponse.class);
+            } else {
+                chunkDetailsResponse = JsonUtil.jsonStringToObject(chunkString, ChunkDetailsResponse.class);
+            }
+            if (chunkDetailsResponse.getError() != null) {
+                throw new RuntimeException("near rpc return error message," + chunkDetailsResponse.getError());
+            }
+            return chunkDetailsResponse;
+        } catch (Exception e) {
+            log.error("getChunkDetailsById error", e);
+            throw e;
+        }
     }
 
     @Override
@@ -289,6 +306,33 @@ public class NearRpcServiceImpl implements NearRpcService {
      */
     private <T extends NearGeneralResponse> T historicalNearRequest(String methodName, JsonNode params, Class<T> clazz) {
         return nearRequest(getHistoricalProxyHttpPost(), methodName, params, clazz);
+    }
+
+    private String nearRequest(HttpPost httpPost, String methodName, JsonNode params) {
+        CloseableHttpResponse response = null;
+        try {
+            // 获取httpClient
+            final CloseableHttpClient onlySsl13Client = getOnlySsl13Client();
+            // 设置Entity
+            httpPost.setEntity(getGeneralRequest(methodName, params));
+            // 发送请求
+            response = onlySsl13Client.execute(httpPost);
+            // 检查响应码
+            checkResponseCode(response);
+            return EntityUtils.toString(response.getEntity());
+        } catch (Exception e) {
+            log.error("http with near error,{}", response, e);
+        } finally {
+            if (response != null) {
+                try {
+                    EntityUtils.consume(response.getEntity());
+                    response.close();
+                } catch (Exception e) {
+                    log.error("close error", e);
+                }
+            }
+        }
+        throw new RuntimeException("nearRequest result is null");
     }
 
     private <T extends NearGeneralResponse> T nearRequest(HttpPost httpPost, String methodName, JsonNode params, Class<T> clazz) {
@@ -319,7 +363,7 @@ public class NearRpcServiceImpl implements NearRpcService {
                 }
             }
         }
-        throw new RuntimeException("getTransactionStatus result is null");
+        throw new RuntimeException("nearRequest result is null");
     }
 
     private void checkResponseCode(HttpResponse response) {

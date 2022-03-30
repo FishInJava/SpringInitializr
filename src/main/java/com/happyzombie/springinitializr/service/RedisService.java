@@ -181,6 +181,17 @@ public class RedisService {
     }
 
     /**
+     * 排序
+     * 参考指令
+     * ZREVRANGE near.analyze:hot.transactions.find:hot.account:zset 0 10 WITHSCORES
+     */
+    public <T> Set<ZSetOperations.TypedTuple<T>> zReverseRangeWithScores(String key, long start, long end) {
+        ZSetOperations<String, T> zSet = redisTemplate.opsForZSet();
+        final Set<ZSetOperations.TypedTuple<T>> typedTuples = zSet.reverseRangeWithScores(key, start, end);
+        return typedTuples;
+    }
+
+    /**
      * 有序集合获取
      */
     public Set<Object> rangeByScore(String key, double score, double scoure1) {

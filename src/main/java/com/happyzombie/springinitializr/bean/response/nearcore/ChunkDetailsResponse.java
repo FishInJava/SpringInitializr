@@ -68,6 +68,7 @@ public class ChunkDetailsResponse extends NearGeneralResponse {
         @NoArgsConstructor
         @Data
         public static class TransactionsDTO {
+            // 这个对象是返回不规则的，有String，还有ActionsDto对象
             @JsonProperty("actions")
             private List<ActionsDTO> actions;
             @JsonProperty("hash")
@@ -86,11 +87,39 @@ public class ChunkDetailsResponse extends NearGeneralResponse {
             @NoArgsConstructor
             @Data
             public static class ActionsDTO {
+                // "CreateAccount"
+                @JsonProperty("CreateAccount")
+                private String createAccount;
+
                 @JsonProperty("Transfer")
                 private Transfer transfer;
 
+                @JsonProperty("AddKey")
+                private AddKey addKey;
+
                 @JsonProperty("FunctionCall")
                 private FunctionCallDTO functionCall;
+
+                @NoArgsConstructor
+                @Data
+                public static class AddKey {
+                    @JsonProperty("public_key")
+                    private String publicKey;
+
+                    @JsonProperty("access_key")
+                    private AccessKey accessKey;
+
+                    @NoArgsConstructor
+                    @Data
+                    public static class AccessKey {
+                        @JsonProperty("nonce")
+                        private Long nonce;
+                        @JsonProperty("permission")
+                        // 这个也不是规则的，有时是字符串，有时是一个FunctionCall格式的对象
+                        private Object permission;
+                    }
+
+                }
 
                 @NoArgsConstructor
                 @Data

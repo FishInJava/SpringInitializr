@@ -4,6 +4,7 @@ import com.happyzombie.springinitializr.bean.RedisKey;
 import com.happyzombie.springinitializr.bean.response.nearcore.BlockDetailsResponse;
 import com.happyzombie.springinitializr.bean.response.nearcore.ChunkDetailsResponse;
 import com.happyzombie.springinitializr.common.util.CollectionUtil;
+import com.happyzombie.springinitializr.common.util.StringUtil;
 import com.happyzombie.springinitializr.common.util.ThreadPoolUtil;
 import com.happyzombie.springinitializr.service.NearRpcService;
 import com.happyzombie.springinitializr.service.RedisService;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 import org.springframework.stereotype.Component;
 
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -27,6 +29,18 @@ public class NearLatestBlockJob extends QuartzJobBean {
     @Autowired
     RedisService redisService;
 
+    /**
+     * 防止重复
+     */
+    private static final HashSet<String> TRAN_HASH = new HashSet<>(4096);
+
+    private void cleanTransactionMap() {
+        if (TRAN_HASH.size() > 10000) {
+            log.info("定期清理 TRAN_HASH");
+            TRAN_HASH.clear();
+        }
+    }
+
     @Override
     protected void executeInternal(JobExecutionContext context) {
         String blockHash = null;
@@ -34,6 +48,14 @@ public class NearLatestBlockJob extends QuartzJobBean {
             // 获取最新区块
             final BlockDetailsResponse latestBlockDetail = nearRpcService.getLatestBlockDetail();
             blockHash = latestBlockDetail.getResult().getHeader().getHash();
+            // 定期清除Map，没必要引入guava，每次简单判断下就好
+            cleanTransactionMap();
+            // 防止重复处理block
+            if (TRAN_HASH.contains(blockHash)) {
+                return;
+            } else {
+                TRAN_HASH.add(blockHash);
+            }
             // 获取区块中chunks
             final List<BlockDetailsResponse.ResultDTO.ChunksDTO> chunks = latestBlockDetail.getResult().getChunks();
             // 多线程处理每个chunk
@@ -61,22 +83,28 @@ public class NearLatestBlockJob extends QuartzJobBean {
         transactions.forEach(transactionsDTO -> {
             // 合约发布方（包括转账方，后面用action直接过滤掉）
             final String receiverId = transactionsDTO.getReceiverId();
-            // todo 这种返回格式不确定的结构，java怎么处理好点
+            // todo ActionsDTO 这种返回格式不确定的结构，java怎么处理好点？
             final List<ChunkDetailsResponse.ResultDTO.TransactionsDTO.ActionsDTO> actions = transactionsDTO.getActions();
-            if (CollectionUtil.isNotEmpty(actions) && actions.size() == 1) {
-                // 取第一个
-                final ChunkDetailsResponse.ResultDTO.TransactionsDTO.ActionsDTO.FunctionCallDTO functionCall = actions.get(0).getFunctionCall();
+            if (CollectionUtil.isEmpty(actions)) {
+                log.error("actions  为空:{}", chunksDTO.getChunkHash());
+                return;
+            }
+
+            actions.forEach(actionsDTO -> {
+                final ChunkDetailsResponse.ResultDTO.TransactionsDTO.ActionsDTO.FunctionCallDTO functionCall = actionsDTO.getFunctionCall();
                 // 合约方法名
                 if (functionCall != null) {
                     final String methodName = functionCall.getMethodName();
                     // 写入redis
                     saveInRedis(receiverId, methodName);
-                } else {
-                    log.error("FunctionCallDTO为空，判断是否需要过滤该Action，chunk_hash:{}", chunksDTO.getChunkHash());
+                    // 忽略的场景：1.transfer 2.addKey操作 3.receiverId和signerId相同（自己处理自己的交易） 4.CreateAccount动作
+                } else if (actionsDTO.getTransfer() == null &&
+                        actionsDTO.getAddKey() == null &&
+                        !receiverId.equals(transactionsDTO.getSignerId()) &&
+                        StringUtil.isEmpty(actionsDTO.getCreateAccount())) {
+                    log.error("actions  信息格式不对，chunk_hash:{}", chunksDTO.getChunkHash());
                 }
-            } else {
-                log.error("actions  信息格式不对，chunk_hash:{}", chunksDTO.getChunkHash());
-            }
+            });
         });
     }
 

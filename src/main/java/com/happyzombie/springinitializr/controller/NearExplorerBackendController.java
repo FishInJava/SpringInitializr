@@ -18,10 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * https://infura.io/
- * account:hibabyzombie@yahoo.com
- */
 @RestController
 @Slf4j
 @RequestMapping("/nearExplorerBackendController")
