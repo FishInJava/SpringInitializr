@@ -80,6 +80,13 @@ public class NearExplorerBackendController {
     }
 
     @CrossOrigin
+    @RequestMapping(value = "/getHistoricalChunkDetailsById/{chunkId}", method = RequestMethod.GET)
+    public Result<Object> getHistoricalChunkDetailsById(@PathVariable("chunkId") String chunkId) {
+        final ChunkDetailsResponse latestBlockDetail = nearRpcService.getHistoricalChunkDetailsById(chunkId);
+        return Result.successResult(latestBlockDetail);
+    }
+
+    @CrossOrigin
     @RequestMapping(value = "/getReceiptById/{receiptId}", method = RequestMethod.GET)
     public Result<Object> getReceiptById(@PathVariable("receiptId") String receiptId) {
         final ReceiptDetailsResponse latestBlockDetail = nearRpcService.getReceiptById(receiptId);

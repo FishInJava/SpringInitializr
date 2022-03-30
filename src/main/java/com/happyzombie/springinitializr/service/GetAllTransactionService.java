@@ -1,6 +1,5 @@
 package com.happyzombie.springinitializr.service;
 
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.happyzombie.springinitializr.api.Action;
 import com.happyzombie.springinitializr.api.TransactionBaseInfo;
 import com.happyzombie.springinitializr.api.socket.handler.TransactionsListByAccountIdResponseHandler;
@@ -8,6 +7,7 @@ import com.happyzombie.springinitializr.bean.entity.TransactionActionsEntity;
 import com.happyzombie.springinitializr.bean.entity.TransactionsEntity;
 import com.happyzombie.springinitializr.common.util.CollectionUtil;
 import com.happyzombie.springinitializr.common.util.JsonUtil;
+import com.happyzombie.springinitializr.common.util.ThreadPoolUtil;
 import com.happyzombie.springinitializr.dao.TransactionActionsEntityMapper;
 import com.happyzombie.springinitializr.dao.TransactionsEntityMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -22,10 +22,6 @@ import javax.annotation.Resource;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.RejectedExecutionHandler;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -34,19 +30,6 @@ import java.util.concurrent.atomic.AtomicReference;
 @Service
 @Slf4j
 public class GetAllTransactionService {
-    private static final LinkedBlockingQueue<Runnable> BLOCKING_QUEUE = new LinkedBlockingQueue<>(200);
-
-    private static final RejectedExecutionHandler LOG_REJECTED_HANDLER = (r, executor) -> log.error("reject");
-
-    private static final ThreadPoolExecutor POOL = new ThreadPoolExecutor(
-            Runtime.getRuntime().availableProcessors(),
-            Runtime.getRuntime().availableProcessors(),
-            0,
-            TimeUnit.MINUTES,
-            BLOCKING_QUEUE,
-            new ThreadFactoryBuilder().setNameFormat("==========GetAllTransactionService-%d").build(),
-            LOG_REJECTED_HANDLER);
-
     @Resource
     public TransactionActionsEntityMapper transactionActionsMapper;
 
@@ -80,7 +63,7 @@ public class GetAllTransactionService {
          * todo 问题2
          * 最新的Transaction信息可能是中间态的，比如说执行中，是否要考虑后续更新？终态如何判断？
          */
-        POOL.submit(() -> {
+        ThreadPoolUtil.getGeneralPool().submit(() -> {
             try {
                 /**
                  * Step1:查询DB，查询最新的一条数据（Timestamp最大），获得Timestamp_DB_Newest和Hash_DB_Newest

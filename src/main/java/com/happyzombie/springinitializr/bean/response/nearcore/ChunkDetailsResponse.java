@@ -20,7 +20,7 @@ public class ChunkDetailsResponse extends NearGeneralResponse {
         @JsonProperty("header")
         private HeaderDTO header;
         @JsonProperty("transactions")
-        private List<?> transactions;
+        private List<TransactionsDTO> transactions;
         @JsonProperty("receipts")
         private List<ReceiptsDTO> receipts;
 
@@ -63,6 +63,55 @@ public class ChunkDetailsResponse extends NearGeneralResponse {
             private List<?> validatorProposals;
             @JsonProperty("signature")
             private String signature;
+        }
+
+        @NoArgsConstructor
+        @Data
+        public static class TransactionsDTO {
+            @JsonProperty("actions")
+            private List<ActionsDTO> actions;
+            @JsonProperty("hash")
+            private String hash;
+            @JsonProperty("nonce")
+            private Long nonce;
+            @JsonProperty("public_key")
+            private String publicKey;
+            @JsonProperty("receiver_id")
+            private String receiverId;
+            @JsonProperty("signature")
+            private String signature;
+            @JsonProperty("signer_id")
+            private String signerId;
+
+            @NoArgsConstructor
+            @Data
+            public static class ActionsDTO {
+                @JsonProperty("Transfer")
+                private Transfer transfer;
+
+                @JsonProperty("FunctionCall")
+                private FunctionCallDTO functionCall;
+
+                @NoArgsConstructor
+                @Data
+                public static class Transfer {
+                    @JsonProperty("deposit")
+                    private String deposit;
+                }
+
+                @NoArgsConstructor
+                @Data
+                public static class FunctionCallDTO {
+                    @JsonProperty("args")
+                    private String args;
+                    @JsonProperty("deposit")
+                    private String deposit;
+                    @JsonProperty("gas")
+                    private Long gas;
+                    @JsonProperty("method_name")
+                    private String methodName;
+                }
+            }
         }
 
         @NoArgsConstructor

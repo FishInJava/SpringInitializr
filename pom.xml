@@ -38,6 +38,8 @@
 
         <!--
            启动器
+           quartz
+           redis
            spring boot starter
            starter test
            starter web:内嵌tomcat
@@ -45,6 +47,16 @@
            mybatis
            websocket
          -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-quartz</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>

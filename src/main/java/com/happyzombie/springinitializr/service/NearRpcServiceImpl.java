@@ -267,6 +267,13 @@ public class NearRpcServiceImpl implements NearRpcService {
     }
 
     @Override
+    public ChunkDetailsResponse getHistoricalChunkDetailsById(String chunkId) {
+        final ObjectNode request = JsonUtil.getObjectNode();
+        request.put("chunk_id", chunkId);
+        return historicalNearRequest("chunk", request, ChunkDetailsResponse.class);
+    }
+
+    @Override
     public ReceiptDetailsResponse getReceiptById(String receiptId) {
         final ObjectNode request = JsonUtil.getObjectNode();
         request.put("receipt_id", receiptId);

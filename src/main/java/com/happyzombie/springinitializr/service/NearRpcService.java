@@ -22,5 +22,7 @@ public interface NearRpcService {
 
     ChunkDetailsResponse getChunkDetailsById(String chunkId);
 
+    ChunkDetailsResponse getHistoricalChunkDetailsById(String chunkId);
+
     ReceiptDetailsResponse getReceiptById(String receiptId);
 }
