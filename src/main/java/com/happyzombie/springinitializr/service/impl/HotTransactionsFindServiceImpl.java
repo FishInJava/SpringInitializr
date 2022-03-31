@@ -19,4 +19,16 @@ public class HotTransactionsFindServiceImpl implements HotTransactionsFindServic
         final Set<ZSetOperations.TypedTuple<String>> typedTuples = redisService.zReverseRangeWithScores(RedisKey.HOT_TRANSACTIONS_FIND, start, end);
         return typedTuples;
     }
+
+    @Override
+    public Long getHotAccountIdTotalCount() {
+        return redisService.zSize(RedisKey.HOT_TRANSACTIONS_FIND);
+    }
+
+    @Override
+    public Set<ZSetOperations.TypedTuple<String>> getHotMethodByAccountId(String accountId, long start, long end) {
+        final String hotMethodKey = String.format(RedisKey.HOT_TRANSACTIONS_METHOD_FIND, accountId);
+        final Set<ZSetOperations.TypedTuple<String>> typedTuples = redisService.zReverseRangeWithScores(hotMethodKey, start, end);
+        return typedTuples;
+    }
 }

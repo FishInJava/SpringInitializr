@@ -6,4 +6,8 @@ import java.util.Set;
 
 public interface HotTransactionsFindService {
     Set<ZSetOperations.TypedTuple<String>> getHotAccountId(long start, long end);
+
+    Long getHotAccountIdTotalCount();
+
+    Set<ZSetOperations.TypedTuple<String>> getHotMethodByAccountId(String accountId, long start, long end);
 }

@@ -167,7 +167,7 @@ public class RedisService {
     }
 
     /**
-     * 如果没有则初始化一个score为0的值，有则+1
+     * 如果没有则初始化一个score为1的值，有则+1
      * todo 这里应该有事务
      */
     public <T> void zInitOrIncrement(String key, T value) {
@@ -176,7 +176,7 @@ public class RedisService {
         if (aDouble != null) {
             zSet.incrementScore(key, value, 1);
         } else {
-            zSet.incrementScore(key, value, 0);
+            zSet.add(key, value, 1);
         }
     }
 
@@ -189,6 +189,11 @@ public class RedisService {
         ZSetOperations<String, T> zSet = redisTemplate.opsForZSet();
         final Set<ZSetOperations.TypedTuple<T>> typedTuples = zSet.reverseRangeWithScores(key, start, end);
         return typedTuples;
+    }
+
+    public Long zSize(String key) {
+        ZSetOperations zSet = redisTemplate.opsForZSet();
+        return zSet.size(key);
     }
 
     /**

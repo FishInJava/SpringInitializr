@@ -29,6 +29,8 @@ public class NearLatestBlockJob extends QuartzJobBean {
     @Autowired
     RedisService redisService;
 
+    private static int count = 0;
+
     /**
      * 防止重复
      */
@@ -41,12 +43,22 @@ public class NearLatestBlockJob extends QuartzJobBean {
         }
     }
 
+    private void countAndLog(BlockDetailsResponse latestBlockDetail) {
+        if (count > 3600) {
+            count = 0;
+            log.info("NearLatestBlockJob 运行360次:{}", latestBlockDetail);
+        } else {
+            count++;
+        }
+    }
+
     @Override
     protected void executeInternal(JobExecutionContext context) {
         String blockHash = null;
         try {
             // 获取最新区块
             final BlockDetailsResponse latestBlockDetail = nearRpcService.getLatestBlockDetail();
+            countAndLog(latestBlockDetail);
             blockHash = latestBlockDetail.getResult().getHeader().getHash();
             // 定期清除Map，没必要引入guava，每次简单判断下就好
             cleanTransactionMap();

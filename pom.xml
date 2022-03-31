@@ -38,6 +38,7 @@
 
         <!--
            启动器
+           pagehelper
            quartz
            redis
            spring boot starter
@@ -47,6 +48,13 @@
            mybatis
            websocket
          -->
+
+        <dependency>
+            <groupId>com.github.pagehelper</groupId>
+            <artifactId>pagehelper-spring-boot-starter</artifactId>
+            <version>1.4.1</version>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-quartz</artifactId>
