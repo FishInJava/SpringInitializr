@@ -1,18 +1,27 @@
 package com.happyzombie.springinitializr.service.impl;
 
 import com.happyzombie.springinitializr.bean.RedisKey;
+import com.happyzombie.springinitializr.bean.dto.SelectStatisticsDTO;
+import com.happyzombie.springinitializr.bean.request.statistics.GetStatisticsTransactionsRequest;
+import com.happyzombie.springinitializr.common.util.DateUtil;
+import com.happyzombie.springinitializr.dao.TransactionsAnalyzeEntityMapper;
 import com.happyzombie.springinitializr.service.HotTransactionsFindService;
 import com.happyzombie.springinitializr.service.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
+import java.util.List;
 import java.util.Set;
 
 @Service
 public class HotTransactionsFindServiceImpl implements HotTransactionsFindService {
     @Autowired
     RedisService redisService;
+
+    @Resource
+    TransactionsAnalyzeEntityMapper transactionsAnalyzeEntityMapper;
 
     @Override
     public Set<ZSetOperations.TypedTuple<String>> getHotAccountId(long start, long end) {
@@ -30,5 +39,25 @@ public class HotTransactionsFindServiceImpl implements HotTransactionsFindServic
         final String hotMethodKey = String.format(RedisKey.HOT_TRANSACTIONS_METHOD_FIND, accountId);
         final Set<ZSetOperations.TypedTuple<String>> typedTuples = redisService.zReverseRangeWithScores(hotMethodKey, start, end);
         return typedTuples;
+    }
+
+    @Override
+    public List<SelectStatisticsDTO> getStatisticsTransactions(GetStatisticsTransactionsRequest request) {
+        final Long time = request.getMilliTime();
+        final Long currentTimestampMilli = DateUtil.getCurrentTimestampMilli();
+        request.setBeginTime(currentTimestampMilli - time);
+        request.setEndTime(currentTimestampMilli);
+        final List<SelectStatisticsDTO> transactionsAnalyzeEntities = transactionsAnalyzeEntityMapper.selectStatistics(request);
+        return transactionsAnalyzeEntities;
+    }
+    
+    @Override
+    public Long getStatisticsTransactionsTotalCount(GetStatisticsTransactionsRequest request) {
+        final Long time = request.getMilliTime();
+        final Long currentTimestampMilli = DateUtil.getCurrentTimestampMilli();
+        request.setBeginTime(currentTimestampMilli - time);
+        request.setEndTime(currentTimestampMilli);
+        final Long statisticsTransactionsTotalCount = transactionsAnalyzeEntityMapper.getStatisticsTransactionsTotalCount(request);
+        return statisticsTransactionsTotalCount;
     }
 }

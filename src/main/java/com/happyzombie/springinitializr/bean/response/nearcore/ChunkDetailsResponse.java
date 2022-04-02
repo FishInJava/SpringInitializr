@@ -11,6 +11,18 @@ import java.util.List;
 public class ChunkDetailsResponse extends NearGeneralResponse {
     @JsonProperty("result")
     private ResultDTO result;
+    
+    public static String getActionType(ChunkDetailsResponse.ResultDTO.TransactionsDTO.ActionsDTO actionsDTO) {
+        if (actionsDTO.getFunctionCall() != null) {
+            return "FunctionCall";
+        } else if (actionsDTO.getTransfer() != null) {
+            return "Transfer";
+        } else if (actionsDTO.getAddKey() != null) {
+            return "AddKey";
+        } else {
+            return "unknown";
+        }
+    }
 
     @NoArgsConstructor
     @Data

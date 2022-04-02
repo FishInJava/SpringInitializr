@@ -28,3 +28,17 @@ CREATE TABLE `near_analyze`.`transaction_actions`
     PRIMARY KEY (`id`)
 ) ENGINE=INNODB CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='交易类型表';
 
+
+-- 交易分析表（来源最新区块实时查询定时任务）
+CREATE TABLE `near_analyze`.`transaction_analyze`
+(
+    `id`               BIGINT       NOT NULL AUTO_INCREMENT,
+    `signer_id`        VARCHAR(64) COMMENT '请求发起者',
+    `receiver_id`      VARCHAR(64) COMMENT '请求处理者/合约',
+    `actions`          VARCHAR(64),
+    `is_simple_action` TINYINT UNSIGNED COMMENT '是否单一aciton，1是,0否 ,对于多action，后续还要优化',
+    `method_name`      VARCHAR(64) COMMENT '只适用于action是FunctionCall',
+    `chunk_id`         VARCHAR(128) NOT NULL COMMENT '用于追溯该笔交易',
+    `create_time`      BIGINT NULL COMMENT '交易时间（要取交易时间，或者区块产生时间）'
+        PRIMARY KEY (`id`)
+) ENGINE=INNODB CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='交易分析表（来源最新区块）';
