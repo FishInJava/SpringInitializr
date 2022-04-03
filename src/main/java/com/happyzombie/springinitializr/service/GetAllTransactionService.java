@@ -102,14 +102,14 @@ public class GetAllTransactionService {
                 }
 
                 // 全量写入
-                if (first.getBlockTimestamp().compareTo(dbOldest.getBlockTimestamp()) < 0 || (first.getBlockTimestamp().compareTo(dbOldest.getBlockTimestamp()) == 0 && !first.getHash().equals(dbOldest.getHash()))) {
+                if (last.getBlockTimestamp().compareTo(dbOldest.getBlockTimestamp()) > 0 || (first.getBlockTimestamp().compareTo(dbOldest.getBlockTimestamp()) == 0 && !first.getHash().equals(dbOldest.getHash()))) {
                     log.info("=============全量写入");
                     insertTransAndActions(trans, trans.size() - 1);
                     // 发送webSocket，继续查询 如果发生异常
                     nearExplorerBackendService.getTransactionsListByAccountId(last.getSignerId(), last.getBlockTimestamp(), last.getTransactionIndex());
                 } else {
-                    // 确认写入部分
-                    log.info("=============确认写入部分");
+                    // 部分写入
+                    log.info("=============部分写入");
                     AtomicReference<Integer> index = new AtomicReference<>();
                     final boolean anyMatch = trans.stream().anyMatch(transactionBaseInfo -> {
                         final boolean equals = transactionBaseInfo.getHash().equals(dbOldest.getHash());

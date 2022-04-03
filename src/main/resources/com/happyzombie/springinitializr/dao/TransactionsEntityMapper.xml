@@ -65,6 +65,7 @@
             #{item.indexInChunk}
             )
         </foreach>
+        ON DUPLICATE KEY update block_timestamp = values(block_timestamp)
     </insert>
 
     <insert id="insertSelective" parameterType="com.happyzombie.springinitializr.bean.entity.TransactionsEntity">

@@ -15,10 +15,12 @@ public class ThreadPoolUtil {
     private static final LinkedBlockingQueue<Runnable> BLOCKING_QUEUE = new LinkedBlockingQueue<>(200);
 
     private static final RejectedExecutionHandler LOG_REJECTED_HANDLER = (r, executor) -> log.error("reject");
-
+    /**
+     * 这个maximumPoolSize还是有用的,虽然同时最多8个线程并行，但是可以开20个线程去处理，这20个线程总会抢到时间片，变相的增大了线程池阻塞队列的出口。
+     */
     private static final ThreadPoolExecutor POOL = new ThreadPoolExecutor(
             Runtime.getRuntime().availableProcessors(),
-            Runtime.getRuntime().availableProcessors(),
+            20,
             0,
             TimeUnit.MINUTES,
             BLOCKING_QUEUE,

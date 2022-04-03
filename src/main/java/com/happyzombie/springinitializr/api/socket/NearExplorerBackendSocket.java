@@ -124,7 +124,7 @@ public class NearExplorerBackendSocket implements InitializingBean {
      * 可能要生成
      * Sec-WebSocket-Key:随机字符串
      */
-    static String HOST = "near-explorer-wamp.onrender.com";
+    static String HOST = "wamp.onrender.com";
     static String ORIGIN = "https://explorer.near.org";
 
     private Map<String, String> getHeaders() {
