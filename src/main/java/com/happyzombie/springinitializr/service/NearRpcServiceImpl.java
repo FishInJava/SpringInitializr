@@ -95,18 +95,22 @@ public class NearRpcServiceImpl implements NearRpcService {
                 return false;
             }
             if (exception instanceof NoHttpResponseException) {// 如果服务器丢掉了连接，那么就重试
+                log.error("服务器丢掉了连接，重试");
                 return true;
             }
             if (exception instanceof SSLHandshakeException) {// 不要重试SSL握手异常
                 return false;
             }
             if (exception instanceof InterruptedIOException) {// 超时
+                log.error("======超时");
                 return true;
             }
             if (exception instanceof UnknownHostException) {// 目标服务器不可达
+                log.error("目标服务器不可达");
                 return false;
             }
             if (exception instanceof SSLException) {// ssl握手异常
+                log.error("ssl握手异常");
                 return false;
             }
             HttpClientContext clientContext = HttpClientContext.adapt(context);
@@ -147,7 +151,11 @@ public class NearRpcServiceImpl implements NearRpcService {
     private HttpPost getGeneralProxyHttpPost() {
         // 设置代理
         final HttpHost proxy = new HttpHost(proxyHost, proxyPort);
-        RequestConfig requestConfig = RequestConfig.custom().setProxy(proxy).build();
+        RequestConfig requestConfig = RequestConfig.custom().setProxy(proxy)
+                .setConnectTimeout(10000)
+                .setSocketTimeout(10000)
+                .setConnectionRequestTimeout(10000)
+                .build();
         HttpPost httpPost = new HttpPost(mainNet);
         httpPost.setConfig(requestConfig);
         // setHeader

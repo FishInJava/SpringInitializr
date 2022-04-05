@@ -1,6 +1,7 @@
+#server
 server:
-  #端口号
   port: 8080
+#feign log
 logging:
   level:
     com:
@@ -8,7 +9,14 @@ logging:
         springinitializr:
           feignclient:
     .*: info
-
-
-
-
+#quartz
+spring:
+  quartz:
+    properties:
+      org:
+        quartz:
+          threadPool:
+            class: org.quartz.simpl.SimpleThreadPool
+            threadCount: 20
+            threadPriority: 5
+            threadsInheritContextClassLoaderOfInitializingThread: true
