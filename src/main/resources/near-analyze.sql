@@ -42,3 +42,31 @@ CREATE TABLE `near_analyze`.`transaction_analyze`
     `create_time`      BIGINT NULL COMMENT '交易时间（要取交易时间，或者区块产生时间）'
         PRIMARY KEY (`id`)
 ) ENGINE=INNODB CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='交易分析表（来源最新区块）';
+
+-- 同质化代币信息表
+CREATE TABLE `near_analyze`.`fungible_tokens`
+(
+    `account_id`     VARCHAR(128) NOT NULL COMMENT '合约名称',
+    `symbol`         VARCHAR(36) COMMENT '合约符号',
+    `name`           VARCHAR(128),
+    `decimals`       TINYINT UNSIGNED,
+    `spec`           LONGTEXT,
+    `icon`           LONGTEXT,
+    `reference`      VARCHAR(1024),
+    `reference_hash` VARCHAR(128),
+    PRIMARY KEY (`account_id`)
+) ENGINE=INNODB CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='同质化代币信息表';
+
+-- nft信息表
+CREATE TABLE `near_analyze`.`non_fungible_tokens`
+(
+    `account_id`     VARCHAR(128) NOT NULL COMMENT '合约名称',
+    `symbol`         VARCHAR(36) COMMENT '合约符号',
+    `name`           VARCHAR(128),
+    `spec`           LONGTEXT,
+    `icon`           LONGTEXT,
+    `base_uri`       VARCHAR(2048),
+    `reference`      VARCHAR(1024),
+    `reference_hash` VARCHAR(128),
+    PRIMARY KEY (`account_id`)
+) ENGINE=INNODB CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='nft信息表';

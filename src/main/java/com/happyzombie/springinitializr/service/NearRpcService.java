@@ -2,6 +2,8 @@ package com.happyzombie.springinitializr.service;
 
 import com.happyzombie.springinitializr.bean.response.nearcore.BlockDetailsResponse;
 import com.happyzombie.springinitializr.bean.response.nearcore.ChunkDetailsResponse;
+import com.happyzombie.springinitializr.bean.response.nearcore.FTMetadataResponse;
+import com.happyzombie.springinitializr.bean.response.nearcore.NFTMetadataResponse;
 import com.happyzombie.springinitializr.bean.response.nearcore.ReceiptDetailsResponse;
 import com.happyzombie.springinitializr.bean.response.nearcore.TxStatusResponse;
 import com.happyzombie.springinitializr.bean.response.nearcore.ViewAccountResponse;
@@ -25,4 +27,8 @@ public interface NearRpcService {
     ChunkDetailsResponse getHistoricalChunkDetailsById(String chunkId);
 
     ReceiptDetailsResponse getReceiptById(String receiptId);
+
+    FTMetadataResponse getFTMetadata(String contractName);
+
+    NFTMetadataResponse getNFTMetadata(String contractName);
 }

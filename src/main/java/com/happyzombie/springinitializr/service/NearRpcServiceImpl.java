@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.happyzombie.springinitializr.bean.response.nearcore.BlockDetailsResponse;
 import com.happyzombie.springinitializr.bean.response.nearcore.ChunkDetailsResponse;
+import com.happyzombie.springinitializr.bean.response.nearcore.FTMetadataResponse;
+import com.happyzombie.springinitializr.bean.response.nearcore.NFTMetadataResponse;
 import com.happyzombie.springinitializr.bean.response.nearcore.NearGeneralResponse;
 import com.happyzombie.springinitializr.bean.response.nearcore.ReceiptDetailsResponse;
 import com.happyzombie.springinitializr.bean.response.nearcore.TxStatusResponse;
@@ -68,10 +70,14 @@ public class NearRpcServiceImpl implements NearRpcService {
     @Value("#{'${tls13.spport.ciphersuites}'.split(',')}")
     private String[] cipherSuites;
 
-    // http客户端
+    /**
+     * http客户端
+     */
     private volatile CloseableHttpClient onlySsl13Client;
 
-    // 连接管理器
+    /**
+     * 连接管理器
+     */
     private static final PoolingHttpClientConnectionManager CONN_MANAGER = new PoolingHttpClientConnectionManager();
 
     static {
@@ -120,7 +126,9 @@ public class NearRpcServiceImpl implements NearRpcService {
         };
     }
 
-    // 获取Http客户端
+    /**
+     * 获取Http客户端
+     */
     private CloseableHttpClient getOnlySsl13Client() {
         if (onlySsl13Client == null) {
             synchronized (NearRpcServiceImpl.class) {
@@ -303,6 +311,28 @@ public class NearRpcServiceImpl implements NearRpcService {
         final ObjectNode request = JsonUtil.getObjectNode();
         request.put("receipt_id", receiptId);
         return generalNearRequest("EXPERIMENTAL_receipt", request, ReceiptDetailsResponse.class);
+    }
+
+    @Override
+    public FTMetadataResponse getFTMetadata(String contractName) {
+        final ObjectNode request = JsonUtil.getObjectNode();
+        request.put("request_type", "call_function");
+        request.put("account_id", contractName);
+        request.put("method_name", "ft_metadata");
+        request.put("args_base64", "e30=");
+        request.put("finality", "optimistic");
+        return generalNearRequest("query", request, FTMetadataResponse.class);
+    }
+
+    @Override
+    public NFTMetadataResponse getNFTMetadata(String contractName) {
+        final ObjectNode request = JsonUtil.getObjectNode();
+        request.put("request_type", "call_function");
+        request.put("account_id", contractName);
+        request.put("method_name", "nft_metadata");
+        request.put("args_base64", "e30=");
+        request.put("finality", "optimistic");
+        return generalNearRequest("query", request, NFTMetadataResponse.class);
     }
 
     private <T extends NearGeneralResponse> T generalNearRequest(String methodName, JsonNode params, Class<T> clazz) {
