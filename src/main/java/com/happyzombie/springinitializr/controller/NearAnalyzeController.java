@@ -5,10 +5,11 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.happyzombie.springinitializr.bean.dto.SelectStatisticsDTO;
 import com.happyzombie.springinitializr.bean.request.statistics.GetStatisticsTransactionsRequest;
+import com.happyzombie.springinitializr.bean.response.reffinance.LiquidityPoolResponse;
 import com.happyzombie.springinitializr.common.bean.Result;
 import com.happyzombie.springinitializr.service.impl.HotTransactionsFindServiceImpl;
+import com.happyzombie.springinitializr.service.reffinance.RefFinanceService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -18,18 +19,25 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * @author admin
+ */
 @RestController
 @Slf4j
 @Validated
 @RequestMapping("/nearAnalyzeController")
 public class NearAnalyzeController {
-    @Autowired
+    @Resource
     HotTransactionsFindServiceImpl hotTransactionsFindService;
+
+    @Resource
+    RefFinanceService refFinanceService;
 
     @CrossOrigin
     @RequestMapping(value = "/getHotAccountId", method = RequestMethod.POST)
@@ -62,6 +70,16 @@ public class NearAnalyzeController {
         final HashMap<String, Object> result = new HashMap<>();
         result.put("list", statisticsTransactions);
         result.put("total", statisticsTransactionsTotalCount);
+        return Result.successResult(result);
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/refFinance/getUserLiquidityPool/{accountId}", method = RequestMethod.GET)
+    public Result<Object> getHotMethodByAccountId(@PathVariable("accountId") String accountId) {
+        final List<LiquidityPoolResponse> userLiquidityPool = refFinanceService.getUserLiquidityPool(accountId);
+        final HashMap<String, Object> result = new HashMap<>();
+        result.put("accountId", accountId);
+        result.put("list", userLiquidityPool);
         return Result.successResult(result);
     }
 }
