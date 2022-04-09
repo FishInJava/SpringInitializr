@@ -1,5 +1,7 @@
 package com.happyzombie.springinitializr.service;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.happyzombie.springinitializr.bean.response.NearGeneralResponse;
 import com.happyzombie.springinitializr.bean.response.nearcore.BlockDetailsResponse;
 import com.happyzombie.springinitializr.bean.response.nearcore.ChunkDetailsResponse;
 import com.happyzombie.springinitializr.bean.response.nearcore.FTMetadataResponse;
@@ -9,6 +11,10 @@ import com.happyzombie.springinitializr.bean.response.nearcore.TxStatusResponse;
 import com.happyzombie.springinitializr.bean.response.nearcore.ViewAccountResponse;
 
 public interface NearRpcService {
+
+    String generalQuery(ObjectNode params);
+
+    <T extends NearGeneralResponse> T generalQuery(ObjectNode params, Class<T> clazz);
 
     TxStatusResponse getTransactionStatus(String transactionHash, String senderAccountId);
 

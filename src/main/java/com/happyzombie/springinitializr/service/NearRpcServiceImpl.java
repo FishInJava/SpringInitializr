@@ -3,11 +3,11 @@ package com.happyzombie.springinitializr.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.happyzombie.springinitializr.bean.response.NearGeneralResponse;
 import com.happyzombie.springinitializr.bean.response.nearcore.BlockDetailsResponse;
 import com.happyzombie.springinitializr.bean.response.nearcore.ChunkDetailsResponse;
 import com.happyzombie.springinitializr.bean.response.nearcore.FTMetadataResponse;
 import com.happyzombie.springinitializr.bean.response.nearcore.NFTMetadataResponse;
-import com.happyzombie.springinitializr.bean.response.nearcore.NearGeneralResponse;
 import com.happyzombie.springinitializr.bean.response.nearcore.ReceiptDetailsResponse;
 import com.happyzombie.springinitializr.bean.response.nearcore.TxStatusResponse;
 import com.happyzombie.springinitializr.bean.response.nearcore.ViewAccountResponse;
@@ -242,6 +242,16 @@ public class NearRpcServiceImpl implements NearRpcService {
         request.put("args_base64", "e30=");
         request.put("finality", "optimistic");
         return generalNearRequest("query", request, NFTMetadataResponse.class);
+    }
+
+    @Override
+    public String generalQuery(ObjectNode params) {
+        return nearRequest(getGeneralProxyHttpPost(), "query", params);
+    }
+
+    @Override
+    public <T extends NearGeneralResponse> T generalQuery(ObjectNode params, Class<T> clazz) {
+        return nearRequest(getGeneralProxyHttpPost(), "query", params, clazz);
     }
 
     private <T extends NearGeneralResponse> T generalNearRequest(String methodName, JsonNode params, Class<T> clazz) {

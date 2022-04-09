@@ -128,6 +128,11 @@
         <!--            <artifactId>jsonrpc4j</artifactId>-->
         <!--            <version>1.6</version>-->
         <!--        </dependency>-->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
 
         <!--        &lt;!&ndash;websocket作为客户端&ndash;&gt;-->
         <dependency>

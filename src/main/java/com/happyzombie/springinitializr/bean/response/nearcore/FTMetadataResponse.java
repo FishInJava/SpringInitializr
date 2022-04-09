@@ -1,6 +1,7 @@
 package com.happyzombie.springinitializr.bean.response.nearcore;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.happyzombie.springinitializr.bean.response.NearGeneralResponse;
 import com.happyzombie.springinitializr.common.util.AssertUtil;
 import com.happyzombie.springinitializr.common.util.JsonUtil;
 import lombok.Data;

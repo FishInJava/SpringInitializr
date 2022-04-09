@@ -1,4 +1,4 @@
-package com.happyzombie.springinitializr.bean.response.nearcore;
+package com.happyzombie.springinitializr.bean.response.reffinance;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.happyzombie.springinitializr.bean.response.NearGeneralResponse;
@@ -9,13 +9,14 @@ import lombok.NoArgsConstructor;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author admin
  */
 @NoArgsConstructor
 @Data
-public class NFTMetadataResponse extends NearGeneralResponse {
+public class ListUserSeedsResponse extends NearGeneralResponse {
     @JsonProperty("result")
     private ResultDTO result;
 
@@ -26,35 +27,19 @@ public class NFTMetadataResponse extends NearGeneralResponse {
         private String blockHash;
         @JsonProperty("block_height")
         private Integer blockHeight;
+        @JsonProperty("error")
+        private String error;
         @JsonProperty("logs")
         private List<?> logs;
-        // 这里返回的是byte数组
         @JsonProperty("result")
         private byte[] result;
 
-        @NoArgsConstructor
-        @Data
-        public static class NFTMetadata {
-            @JsonProperty("symbol")
-            private String symbol;
-            @JsonProperty("name")
-            private String name;
-            @JsonProperty("spec")
-            private String spec;
-            @JsonProperty("icon")
-            private String icon;
-            @JsonProperty("base_uri")
-            private String baseUri;
-            @JsonProperty("reference")
-            private String reference;
-            @JsonProperty("reference_hash")
-            private String referenceHash;
-        }
-
-        public NFTMetadata getMetadata() {
+        public Map getResultMap() {
             AssertUtil.shouldBeTrue(result != null && result.length > 0, "result is null!!");
             final String s = new String(result, StandardCharsets.UTF_8);
-            return JsonUtil.jsonStringToObject(s, NFTMetadata.class);
+            return JsonUtil.jsonStringToObject(s, Map.class);
         }
     }
+
+
 }

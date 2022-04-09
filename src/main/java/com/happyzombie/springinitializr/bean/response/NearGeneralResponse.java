@@ -1,9 +1,12 @@
-package com.happyzombie.springinitializr.bean.response.nearcore;
+package com.happyzombie.springinitializr.bean.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * @author admin
+ */
 @NoArgsConstructor
 @Data
 public class NearGeneralResponse {

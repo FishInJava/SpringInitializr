@@ -1,17 +1,21 @@
 package com.happyzombie.springinitializr.bean.response.nearcore;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.happyzombie.springinitializr.bean.response.NearGeneralResponse;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+/**
+ * @author admin
+ */
 @NoArgsConstructor
 @Data
 public class ChunkDetailsResponse extends NearGeneralResponse {
     @JsonProperty("result")
     private ResultDTO result;
-    
+
     public static String getActionType(ChunkDetailsResponse.ResultDTO.TransactionsDTO.ActionsDTO actionsDTO) {
         if (actionsDTO.getFunctionCall() != null) {
             return "FunctionCall";

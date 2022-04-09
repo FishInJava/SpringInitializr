@@ -1,10 +1,8 @@
 package com.happyzombie.springinitializr.common.bean;
 
 
+import com.happyzombie.springinitializr.common.util.CompressAndDecompressUtil;
 import org.apache.commons.lang3.RandomStringUtils;
-
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 
 /**
  * @author admin
@@ -36,6 +34,6 @@ public interface WebBrowserConstant {
      */
     static String getSecWebSocketKey() {
         final String str = RandomStringUtils.random(16, true, true);
-        return Base64.getEncoder().encodeToString(str.getBytes(StandardCharsets.UTF_8));
+        return CompressAndDecompressUtil.base64(str);
     }
 }

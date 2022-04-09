@@ -5,7 +5,6 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.happyzombie.springinitializr.bean.dto.SelectStatisticsDTO;
 import com.happyzombie.springinitializr.bean.request.statistics.GetStatisticsTransactionsRequest;
-import com.happyzombie.springinitializr.bean.response.reffinance.LiquidityPoolResponse;
 import com.happyzombie.springinitializr.common.bean.Result;
 import com.happyzombie.springinitializr.service.impl.HotTransactionsFindServiceImpl;
 import com.happyzombie.springinitializr.service.reffinance.RefFinanceService;
@@ -70,16 +69,6 @@ public class NearAnalyzeController {
         final HashMap<String, Object> result = new HashMap<>();
         result.put("list", statisticsTransactions);
         result.put("total", statisticsTransactionsTotalCount);
-        return Result.successResult(result);
-    }
-
-    @CrossOrigin
-    @RequestMapping(value = "/refFinance/getUserLiquidityPool/{accountId}", method = RequestMethod.GET)
-    public Result<Object> getHotMethodByAccountId(@PathVariable("accountId") String accountId) {
-        final List<LiquidityPoolResponse> userLiquidityPool = refFinanceService.getUserLiquidityPool(accountId);
-        final HashMap<String, Object> result = new HashMap<>();
-        result.put("accountId", accountId);
-        result.put("list", userLiquidityPool);
         return Result.successResult(result);
     }
 }

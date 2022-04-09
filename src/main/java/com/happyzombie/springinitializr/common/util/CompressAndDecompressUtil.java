@@ -7,9 +7,14 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+/**
+ * @author admin
+ */
 @Slf4j
 public class CompressAndDecompressUtil {
 
@@ -85,6 +90,10 @@ public class CompressAndDecompressUtil {
             log.error("br 解压 error.", e);
         }
         return sb.toString();
+    }
+
+    public static String base64(String str) {
+        return Base64.getEncoder().encodeToString(str.toString().getBytes(StandardCharsets.UTF_8));
     }
 
 }
