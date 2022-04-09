@@ -32,6 +32,7 @@ public class GetPoolResponse extends NearContractResponse<GetPoolResponse.Pool> 
         private Integer amp;
         // ref-finance后台参数
         private RefFinancePoolInfo refFinancePoolInfo;
+        private String tokenPairs;
         //
         private String userFarmStake;
         private String userPoolShares;

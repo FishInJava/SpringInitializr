@@ -69,6 +69,8 @@ public class RefFinanceController {
                     // 从ref后台获取池子信息
                     final RefFinancePoolInfo poolInfoFromRef = refFinanceService.getPoolInfoFromRef(poolId.get());
                     poolInfo.setRefFinancePoolInfo(poolInfoFromRef);
+                    final String join = String.join("/", poolInfoFromRef.getTokenSymbols());
+                    poolInfo.setTokenPairs(join);
 
                     // 用户在该池子中质押farm量
                     final String userFarmStake = listUserSeeds.get(key);
