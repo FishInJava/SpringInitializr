@@ -125,11 +125,15 @@ public class NearRpcServiceImpl implements NearRpcService {
      * @param senderAccountId senderAccountId
      */
     @Override
-    public TxStatusResponse getTransactionStatus(String transactionHash, String senderAccountId) {
+    public TxStatusResponse getTransactionStatus(String transactionHash, String senderAccountId, Boolean history) {
         final ArrayNode params = JsonUtil.getArrayNode();
         params.add(transactionHash);
         params.add(senderAccountId);
-        return generalNearRequest("EXPERIMENTAL_tx_status", params, TxStatusResponse.class);
+        if (history) {
+            return historicalNearRequest("EXPERIMENTAL_tx_status", params, TxStatusResponse.class);
+        } else {
+            return generalNearRequest("EXPERIMENTAL_tx_status", params, TxStatusResponse.class);
+        }
     }
 
     /**

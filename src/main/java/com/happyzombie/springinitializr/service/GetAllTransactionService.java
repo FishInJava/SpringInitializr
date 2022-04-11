@@ -25,7 +25,8 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * 获取用户所有Transaction的服务
+ * 获取用户所有Transaction的服务(采集服务)
+ * @author admin
  */
 @Service
 @Slf4j

@@ -142,4 +142,26 @@
             index_in_chunk         = #{indexInChunk,jdbcType=INTEGER}
         where hash = #{hash,jdbcType=VARCHAR}
     </update>
+
+    <select id="getUserTransactions"
+            parameterType="com.happyzombie.springinitializr.bean.request.user.GetUserTransactionsRequest"
+            resultType="com.happyzombie.springinitializr.bean.dto.GetUserTransactionsDTO">
+        select t.hash,
+               t.signer_account_id      signerAccountId,
+               t.receiver_account_id    receiverAccountId,
+               t.block_timestamp        blockTimestamp,
+               t.included_in_block_hash includedInBlockHash,
+               t.index_in_chunk         indexInChunk,
+               ta.action_kind           actionKind,
+               ta.args                  args
+        from transactions t
+                 join transaction_actions ta on t.hash = ta.transaction_hash and signer_account_id = #{userAccountId}
+        order by block_timestamp desc
+    </select>
+
+    <select id="getUserTransactionsCount" resultType="java.lang.Long">
+        select count(*)
+        from transactions t
+        where signer_account_id = #{userAccountId}
+    </select>
 </mapper>

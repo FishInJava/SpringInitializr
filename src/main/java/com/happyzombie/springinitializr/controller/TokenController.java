@@ -5,7 +5,6 @@ import com.happyzombie.springinitializr.bean.entity.NonFungibleTokensEntityWithB
 import com.happyzombie.springinitializr.common.bean.Result;
 import com.happyzombie.springinitializr.service.TokenService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,12 +12,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
+
+/**
+ * @author admin
+ */
 @RestController
 @Slf4j
 @Validated
 @RequestMapping("/tokenController")
 public class TokenController {
-    @Autowired
+    @Resource
     TokenService tokenService;
 
     @CrossOrigin

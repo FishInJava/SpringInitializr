@@ -9,24 +9,25 @@ import com.happyzombie.springinitializr.common.bean.Result;
 import com.happyzombie.springinitializr.common.util.DateUtil;
 import com.happyzombie.springinitializr.common.util.StringUtil;
 import com.happyzombie.springinitializr.service.NearExplorerBackendService;
-import com.happyzombie.springinitializr.service.NearRpcService;
+import com.happyzombie.springinitializr.service.NearRpcServiceImpl;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
+
 @RestController
 @Slf4j
 @RequestMapping("/nearExplorerBackendController")
 public class NearExplorerBackendController {
-    @Autowired
+    @Resource
     NearExplorerBackendService nearExplorerBackendService;
 
-    @Autowired
-    NearRpcService nearRpcService;
+    @Resource
+    NearRpcServiceImpl nearRpcService;
 
     // 数据采集完成后，查询接口走数据库
     @Deprecated
@@ -35,11 +36,12 @@ public class NearExplorerBackendController {
     public Result<Object> getTransactionsListByAccountId(@PathVariable("accountId") String accountId, @PathVariable("endDate") String endDate, @PathVariable("page") Integer page) {
         if (StringUtil.isEmpty(endDate) && page == null) {
             nearExplorerBackendService.getNewestTransactionsListByAccountId(accountId);
+        } else {
+            // 输入天(年月日)，按天分页
+            final Long aLong = DateUtil.dataStrToMilli(endDate);
+            log.info("当前日期：{}，对应时间戳：{}", endDate, aLong);
+            nearExplorerBackendService.getTransactionsListByAccountId(accountId, aLong, page);
         }
-        // 输入天(年月日)，按天分页
-        final Long aLong = DateUtil.dataStrToMilli(endDate);
-        log.info("当前日期：{}，对应时间戳：{}", endDate, aLong);
-        nearExplorerBackendService.getTransactionsListByAccountId(accountId, aLong, page);
         return Result.successResult(true);
     }
 
@@ -55,10 +57,10 @@ public class NearExplorerBackendController {
     }
 
     @CrossOrigin
-    @RequestMapping(value = "/getTransactionStatus/{transactionHash}/{senderAccountId}", method = RequestMethod.GET)
-    public Result<Object> getTransactionStatus(@PathVariable("transactionHash") String transactionHash, @PathVariable("senderAccountId") String senderAccountId) {
-        final TxStatusResponse transactionStatus = nearRpcService.getTransactionStatus(transactionHash, senderAccountId);
-        return Result.successResult(true);
+    @RequestMapping(value = "/getTransactionStatus/{history}/{transactionHash}/{senderAccountId}", method = RequestMethod.GET)
+    public Result<Object> getTransactionStatus(@PathVariable("history") Boolean history, @PathVariable("transactionHash") String transactionHash, @PathVariable("senderAccountId") String senderAccountId) {
+        final TxStatusResponse transactionStatus = nearRpcService.getTransactionStatus(transactionHash, senderAccountId, history);
+        return Result.successResult(transactionStatus);
     }
 
     @CrossOrigin

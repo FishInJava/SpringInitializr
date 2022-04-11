@@ -16,7 +16,7 @@ public interface NearRpcService {
 
     <T extends NearGeneralResponse> T generalQuery(ObjectNode params, Class<T> clazz);
 
-    TxStatusResponse getTransactionStatus(String transactionHash, String senderAccountId);
+    TxStatusResponse getTransactionStatus(String transactionHash, String senderAccountId, Boolean history);
 
     ViewAccountResponse viewAccount(String accountId);
 
