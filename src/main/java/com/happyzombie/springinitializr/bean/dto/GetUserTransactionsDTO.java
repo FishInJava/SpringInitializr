@@ -6,6 +6,8 @@ import com.happyzombie.springinitializr.common.util.StringUtil;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 /**
  * @author admin
  */
@@ -31,6 +33,10 @@ public class GetUserTransactionsDTO {
 
     private Args argsDTO;
 
+    private String methodName;
+    private String realMethodName;
+    private String realAction;
+
     @NoArgsConstructor
     @Data
     public static class Args {
@@ -43,6 +49,8 @@ public class GetUserTransactionsDTO {
         @JsonProperty("method_name")
         private String methodName;
 
+        private RealArg realArg;
+
         public void setArgs(String args) {
             if (StringUtil.isNotEmpty(args)) {
                 this.args = CompressAndDecompressUtil.base64Decode(args);
@@ -50,6 +58,49 @@ public class GetUserTransactionsDTO {
             }
             this.args = args;
         }
+
+        @NoArgsConstructor
+        @Data
+        public static class RealArg {
+
+            @JsonProperty("request")
+            private RequestDTO request;
+
+            @NoArgsConstructor
+            @Data
+            public static class RequestDTO {
+                @JsonProperty("receiver_id")
+                private String receiverId;
+                @JsonProperty("actions")
+                private List<ActionsDTO> actions;
+
+                @NoArgsConstructor
+                @Data
+                public static class ActionsDTO {
+                    @JsonProperty("type")
+                    private String type;
+                    @JsonProperty("public_key")
+                    private String publicKey;
+                    @JsonProperty("deposit")
+                    private String deposit;
+                    @JsonProperty("permission")
+                    private PermissionDTO permission;
+
+                    @NoArgsConstructor
+                    @Data
+                    public static class PermissionDTO {
+                        @JsonProperty("receiver_id")
+                        private String receiverId;
+                        @JsonProperty("allowance")
+                        private String allowance;
+                        @JsonProperty("method_names")
+                        private List<?> methodNames;
+                    }
+                }
+            }
+        }
+
+
     }
 
 }

@@ -35,6 +35,26 @@ public class UserTransactionService {
                 if (GeneralStr.FUNCTION_CALL.equals(transaction.getActionKind())) {
                     final GetUserTransactionsDTO.Args args = JsonUtil.jsonStringToObject(transaction.getArgs(), GetUserTransactionsDTO.Args.class);
                     transaction.setArgsDTO(args);
+                    transaction.setMethodName(args.getMethodName());
+
+                    // 如果是add_request_and_confirm，找到真正的方法和参数
+                    if (GeneralStr.ADD_REQUEST_AND_CONFIRM.equals(transaction.getMethodName())) {
+                        // 解析真正的请求参数
+                        final String realArgStr = args.getArgs();
+                        final GetUserTransactionsDTO.Args.RealArg realArg = JsonUtil.jsonStringToObject(realArgStr, GetUserTransactionsDTO.Args.RealArg.class);
+                        args.setRealArg(realArg);
+                        final List<GetUserTransactionsDTO.Args.RealArg.RequestDTO.ActionsDTO> actions = realArg.getRequest().getActions();
+                        if (CollectionUtil.isNotEmpty(actions) && actions.size() == 1) {
+                            final GetUserTransactionsDTO.Args.RealArg.RequestDTO.ActionsDTO actionsDTO = actions.get(0);
+                            final String type = actionsDTO.getType();
+                            transaction.setRealAction(type);
+                            // 这里可能要区分具体操作
+                        } else {
+                            log.error("actions 需要再分析！ hash:{}", transaction.getHash());
+                        }
+
+                    }
+
                 }
             });
         }
