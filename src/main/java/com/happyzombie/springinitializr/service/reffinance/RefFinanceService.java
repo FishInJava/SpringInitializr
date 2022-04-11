@@ -64,7 +64,7 @@ public class RefFinanceService {
         request.put("method_name", "list_user_seeds");
         final ObjectNode json = JsonUtil.getObjectNode();
         json.put("account_id", accountId);
-        request.put("args_base64", CompressAndDecompressUtil.base64(json.toString()));
+        request.put("args_base64", CompressAndDecompressUtil.base64Encode(json.toString()));
         request.put("finality", "optimistic");
         final ListUserSeedsResponse nearGeneralResponse = nearRpcService.generalQuery(request, ListUserSeedsResponse.class);
         final Map<String, String> resultMap = nearGeneralResponse.getResult().getResultMap();
@@ -81,7 +81,7 @@ public class RefFinanceService {
         request.put("method_name", "get_pool");
         final ObjectNode json = JsonUtil.getObjectNode();
         json.put("pool_id", poolId);
-        request.put("args_base64", CompressAndDecompressUtil.base64(json.toString()));
+        request.put("args_base64", CompressAndDecompressUtil.base64Encode(json.toString()));
         request.put("finality", "optimistic");
         final GetPoolResponse response = nearRpcService.generalQuery(request, GetPoolResponse.class);
         return response;
@@ -98,7 +98,7 @@ public class RefFinanceService {
         final ObjectNode json = JsonUtil.getObjectNode();
         json.put("pool_id", poolId);
         json.put("account_id", accountId);
-        request.put("args_base64", CompressAndDecompressUtil.base64(json.toString()));
+        request.put("args_base64", CompressAndDecompressUtil.base64Encode(json.toString()));
         request.put("finality", "optimistic");
         final GetPoolSharesResponse response = nearRpcService.generalQuery(request, GetPoolSharesResponse.class);
         return response;
@@ -113,5 +113,5 @@ public class RefFinanceService {
         final RefFinancePoolInfo info = apacheHttpClientComponent.sendGetRequest(get, defaultClient, RefFinancePoolInfo.class);
         return info;
     }
-    
+
 }

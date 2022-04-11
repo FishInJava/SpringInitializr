@@ -13,6 +13,8 @@ import java.time.format.DateTimeFormatter;
  * LocalDate
  * LocalDateTime
  * DateTimeFormatter
+ *
+ * @author admin
  */
 public class DateUtil {
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -35,5 +37,11 @@ public class DateUtil {
         return LocalDateTime.parse(dataStr, FORMATTER).toInstant(CHINA_ZONE_OFFSET).toEpochMilli();
     }
 
-
+    /**
+     * 1649411429567
+     */
+    public static String timestampMilliToString(Long time) {
+        AssertUtil.shouldBeTrue(time != null, "time is null！");
+        return FORMATTER.format(LocalDateTime.ofInstant(Instant.ofEpochMilli(time), CHINA_ZONE_ID));
+    }
 }

@@ -34,6 +34,6 @@ public interface WebBrowserConstant {
      */
     static String getSecWebSocketKey() {
         final String str = RandomStringUtils.random(16, true, true);
-        return CompressAndDecompressUtil.base64(str);
+        return CompressAndDecompressUtil.base64Encode(str);
     }
 }

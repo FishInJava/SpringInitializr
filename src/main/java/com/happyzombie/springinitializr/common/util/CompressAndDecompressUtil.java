@@ -92,8 +92,12 @@ public class CompressAndDecompressUtil {
         return sb.toString();
     }
 
-    public static String base64(String str) {
-        return Base64.getEncoder().encodeToString(str.toString().getBytes(StandardCharsets.UTF_8));
+    public static String base64Encode(String str) {
+        return Base64.getEncoder().encodeToString(str.getBytes(StandardCharsets.UTF_8));
+    }
+
+    public static String base64Decode(String str) {
+        return new String(Base64.getDecoder().decode(str.getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8);
     }
 
 }
