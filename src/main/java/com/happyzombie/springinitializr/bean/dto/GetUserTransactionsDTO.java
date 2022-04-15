@@ -1,12 +1,9 @@
 package com.happyzombie.springinitializr.bean.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.happyzombie.springinitializr.common.util.CompressAndDecompressUtil;
-import com.happyzombie.springinitializr.common.util.StringUtil;
+import com.happyzombie.springinitializr.bean.ActionEnum;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
-import java.util.List;
+import java.util.LinkedList;
 
 /**
  * @author admin
@@ -31,76 +28,20 @@ public class GetUserTransactionsDTO {
 
     private String args;
 
-    private Args argsDTO;
+    /**
+     * 所有actions，应该是有顺序的
+     */
+    private LinkedList<ActionEnum.BigAction> actionList = new LinkedList<>();
 
-    private String methodName;
-    private String realMethodName;
-    private String realAction;
+    /**
+     * push放到第一个
+     */
+    public void pushAction(ActionEnum.BigAction action) {
+        actionList.push(action);
+    }
 
-    @NoArgsConstructor
-    @Data
-    public static class Args {
-        @JsonProperty("gas")
-        private Long gas;
-        @JsonProperty("args")
-        private String args;
-        @JsonProperty("deposit")
-        private String deposit;
-        @JsonProperty("method_name")
-        private String methodName;
-
-        private RealArg realArg;
-
-        public void setArgs(String args) {
-            if (StringUtil.isNotEmpty(args)) {
-                this.args = CompressAndDecompressUtil.base64Decode(args);
-                return;
-            }
-            this.args = args;
-        }
-
-        @NoArgsConstructor
-        @Data
-        public static class RealArg {
-
-            @JsonProperty("request")
-            private RequestDTO request;
-
-            @NoArgsConstructor
-            @Data
-            public static class RequestDTO {
-                @JsonProperty("receiver_id")
-                private String receiverId;
-                @JsonProperty("actions")
-                private List<ActionsDTO> actions;
-
-                @NoArgsConstructor
-                @Data
-                public static class ActionsDTO {
-                    @JsonProperty("type")
-                    private String type;
-                    @JsonProperty("public_key")
-                    private String publicKey;
-                    @JsonProperty("deposit")
-                    private String deposit;
-                    @JsonProperty("permission")
-                    private PermissionDTO permission;
-
-                    @NoArgsConstructor
-                    @Data
-                    public static class PermissionDTO {
-                        @JsonProperty("receiver_id")
-                        private String receiverId;
-                        @JsonProperty("allowance")
-                        private String allowance;
-                        @JsonProperty("method_names")
-                        private List<?> methodNames;
-                    }
-                }
-            }
-        }
-
-
+    public ActionEnum.BigAction getFirstAction() {
+        return actionList.getFirst();
     }
 
 }
