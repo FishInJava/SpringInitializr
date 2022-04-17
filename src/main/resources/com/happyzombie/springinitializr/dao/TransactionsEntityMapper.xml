@@ -155,13 +155,19 @@
                ta.action_kind           actionKind,
                ta.args                  args
         from transactions t
-                 join transaction_actions ta on t.hash = ta.transaction_hash and signer_account_id = #{userAccountId}
+                 join transaction_actions ta on t.hash = ta.transaction_hash
+            and signer_account_id = #{userAccountId}
+            and !json_contains(ta.args ->'$.method_name', '"delete_request"')
+            and !json_contains(ta.args ->'$.method_name', '"confirm"')
         order by block_timestamp desc
     </select>
 
     <select id="getUserTransactionsCount" resultType="java.lang.Long">
         select count(*)
         from transactions t
-        where signer_account_id = #{userAccountId}
+                 join transaction_actions ta on t.hash = ta.transaction_hash
+        and signer_account_id = #{userAccountId}
+          and !json_contains(ta.args ->'$.method_name', '"delete_request"')
+          and !json_contains(ta.args ->'$.method_name', '"confirm"')
     </select>
 </mapper>
