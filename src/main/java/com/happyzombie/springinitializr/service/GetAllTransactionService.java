@@ -90,7 +90,7 @@ public class GetAllTransactionService {
                     insertTransAndActions(trans, trans.size() - 1);
                     final TransactionBaseInfo last = trans.getLast();
                     // 发送webSocket，继续查询 如果发生异常
-                    nearExplorerBackendService.getTransactionsListByAccountId(last.getSignerId(), last.getBlockTimestamp(), last.getTransactionIndex());
+                    nearExplorerBackendService.getTransactionsListByAccountId(signerId, last.getBlockTimestamp(), last.getTransactionIndex());
                     return;
                 }
 
@@ -105,13 +105,12 @@ public class GetAllTransactionService {
 
                 // 全量写入
                 if (first.getBlockTimestamp().compareTo(dbOldest.getBlockTimestamp()) < 0 || (first.getBlockTimestamp().compareTo(dbOldest.getBlockTimestamp()) == 0 && !first.getHash().equals(dbOldest.getHash()))) {
-                    log.info("=============全量写入");
+                    log.info("=============全量写入,写入量:{}，下次查询用户：{}，endTimestamp：{},transactionIndex：{}", trans.size(), signerId, last.getBlockTimestamp(), last.getTransactionIndex());
                     insertTransAndActions(trans, trans.size() - 1);
                     // 发送webSocket，继续查询 如果发生异常
-                    nearExplorerBackendService.getTransactionsListByAccountId(last.getSignerId(), last.getBlockTimestamp(), last.getTransactionIndex());
+                    nearExplorerBackendService.getTransactionsListByAccountId(signerId, last.getBlockTimestamp(), last.getTransactionIndex());
                 } else {
                     // 部分写入
-                    log.info("=============部分写入");
                     AtomicReference<Integer> index = new AtomicReference<>();
                     final boolean anyMatch = trans.stream().anyMatch(transactionBaseInfo -> {
                         final boolean equals = transactionBaseInfo.getHash().equals(dbOldest.getHash());
@@ -120,17 +119,20 @@ public class GetAllTransactionService {
                         }
                         return equals;
                     });
+
+                    // 代码逻辑有问题
                     if (!anyMatch) {
                         log.error("=============没有匹配的数据，检查逻辑！");
                         return;
                     }
 
                     // 部分写入
+                    log.info("=============部分写入，写入量：{}", index.get());
                     insertTransAndActions(trans, index.get() - 1);
 
-                    // 发送webSocket，继续查询
-                    final TransactionBaseInfo transactionBaseInfo = trans.get(index.get());
-                    nearExplorerBackendService.getTransactionsListByAccountId(transactionBaseInfo.getHash(), transactionBaseInfo.getBlockTimestamp(), transactionBaseInfo.getTransactionIndex());
+                    // 发送webSocket，继续查询 todo 部分写入后应该不需要再查询了
+//                    final TransactionBaseInfo transactionBaseInfo = trans.get(index.get());
+//                    nearExplorerBackendService.getTransactionsListByAccountId(transactionBaseInfo.getHash(), transactionBaseInfo.getBlockTimestamp(), transactionBaseInfo.getTransactionIndex());
                 }
             } catch (Exception e) {
                 log.error("==========GetAllTransactionService error", e);

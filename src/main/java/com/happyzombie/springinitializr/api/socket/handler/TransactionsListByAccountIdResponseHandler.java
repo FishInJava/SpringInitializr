@@ -15,6 +15,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 
+/**
+ * @author admin
+ */
 @Slf4j
 @Service
 public class TransactionsListByAccountIdResponseHandler implements SocketResponseHandler {

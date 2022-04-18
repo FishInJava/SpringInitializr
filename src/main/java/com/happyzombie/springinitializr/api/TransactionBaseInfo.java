@@ -4,6 +4,9 @@ import lombok.Data;
 
 import java.util.List;
 
+/**
+ * @author admin
+ */
 @Data
 public class TransactionBaseInfo {
     private String hash;
