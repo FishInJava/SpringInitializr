@@ -78,19 +78,19 @@ public class GetAllTransactionService {
                  * 参考https://docs.near.org/docs/api/rpc
                  */
                 // todo 最后一个场景，backed返回账号的第一条交易
-                final String signerId = TransactionsListByAccountIdResponseHandler.getAccountByRequestId(requestId);
+                final String synchronizedAccountId = TransactionsListByAccountIdResponseHandler.getAccountByRequestId(requestId);
                 // 查询DB最新数据
-                final TransactionsEntity dbOldest = transactionsMapper.selectOneOldestTransaction(signerId);
-                final TransactionsEntity dbNewest = transactionsMapper.selectOneNewestTransaction(signerId);
+                final TransactionsEntity dbOldest = transactionsMapper.selectOneOldestTransaction(synchronizedAccountId);
+                final TransactionsEntity dbNewest = transactionsMapper.selectOneNewestTransaction(synchronizedAccountId);
 
                 // 如果数据库为空
                 if (dbOldest == null) {
                     log.info("=============新库，写入操作");
                     // 全量写入
-                    insertTransAndActions(trans, trans.size() - 1);
+                    insertTransAndActions(synchronizedAccountId, trans, trans.size() - 1);
                     final TransactionBaseInfo last = trans.getLast();
                     // 发送webSocket，继续查询 如果发生异常
-                    nearExplorerBackendService.getTransactionsListByAccountId(signerId, last.getBlockTimestamp(), last.getTransactionIndex());
+                    nearExplorerBackendService.getTransactionsListByAccountId(synchronizedAccountId, last.getBlockTimestamp(), last.getTransactionIndex());
                     return;
                 }
 
@@ -105,10 +105,10 @@ public class GetAllTransactionService {
 
                 // 全量写入
                 if (first.getBlockTimestamp().compareTo(dbOldest.getBlockTimestamp()) < 0 || (first.getBlockTimestamp().compareTo(dbOldest.getBlockTimestamp()) == 0 && !first.getHash().equals(dbOldest.getHash()))) {
-                    log.info("=============全量写入,写入量:{}，下次查询用户：{}，endTimestamp：{},transactionIndex：{}", trans.size(), signerId, last.getBlockTimestamp(), last.getTransactionIndex());
-                    insertTransAndActions(trans, trans.size() - 1);
+                    log.info("=============全量写入,写入量:{}，下次查询用户：{}，endTimestamp：{},transactionIndex：{}", trans.size(), synchronizedAccountId, last.getBlockTimestamp(), last.getTransactionIndex());
+                    insertTransAndActions(synchronizedAccountId, trans, trans.size() - 1);
                     // 发送webSocket，继续查询 如果发生异常
-                    nearExplorerBackendService.getTransactionsListByAccountId(signerId, last.getBlockTimestamp(), last.getTransactionIndex());
+                    nearExplorerBackendService.getTransactionsListByAccountId(synchronizedAccountId, last.getBlockTimestamp(), last.getTransactionIndex());
                 } else {
                     // 部分写入
                     AtomicReference<Integer> index = new AtomicReference<>();
@@ -128,7 +128,7 @@ public class GetAllTransactionService {
 
                     // 部分写入
                     log.info("=============部分写入，写入量：{}", index.get());
-                    insertTransAndActions(trans, index.get() - 1);
+                    insertTransAndActions(synchronizedAccountId, trans, index.get() - 1);
 
                     // 发送webSocket，继续查询 todo 部分写入后应该不需要再查询了
 //                    final TransactionBaseInfo transactionBaseInfo = trans.get(index.get());
@@ -148,8 +148,8 @@ public class GetAllTransactionService {
      * @param trans    交易信息
      * @param endIndex 最后一条写入数据的索引
      */
-    private void insertTransAndActions(LinkedList<TransactionBaseInfo> trans, int endIndex) {
-        final List<TransactionsEntity> insertTrans = getTransInsert(trans, endIndex);
+    private void insertTransAndActions(String synchronizedAccountId, LinkedList<TransactionBaseInfo> trans, int endIndex) {
+        final List<TransactionsEntity> insertTrans = getTransInsert(synchronizedAccountId, trans, endIndex);
         final List<TransactionActionsEntity> insertAction = getTransActionInsert(trans, endIndex);
         insertTransAndActions(insertTrans, insertAction);
     }
@@ -180,12 +180,13 @@ public class GetAllTransactionService {
         dtsManager.rollback(status);
     }
 
-    private List<TransactionsEntity> getTransInsert(LinkedList<TransactionBaseInfo> trans, int endIndex) {
+    private List<TransactionsEntity> getTransInsert(String synchronizedAccountId, LinkedList<TransactionBaseInfo> trans, int endIndex) {
         final List<TransactionsEntity> transactionsEntity = new LinkedList<>();
         for (int i = 0; i <= endIndex; i++) {
             final TransactionBaseInfo transactionBaseInfo = trans.get(i);
             final TransactionsEntity entity = new TransactionsEntity();
             entity.setHash(transactionBaseInfo.getHash());
+            entity.setSynchronizedAccountId(synchronizedAccountId);
             entity.setSignerAccountId(transactionBaseInfo.getSignerId());
             entity.setReceiverAccountId(transactionBaseInfo.getReceiverId());
             entity.setBlockTimestamp(transactionBaseInfo.getBlockTimestamp());

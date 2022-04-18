@@ -5,6 +5,7 @@
         <constructor>
             <idArg column="id" javaType="java.lang.Long" jdbcType="BIGINT"/>
             <arg column="hash" javaType="java.lang.String" jdbcType="VARCHAR"/>
+            <arg column="synchronized_account_id" javaType="java.lang.String" jdbcType="VARCHAR"/>
             <arg column="signer_account_id" javaType="java.lang.String" jdbcType="VARCHAR"/>
             <arg column="receiver_account_id" javaType="java.lang.String" jdbcType="VARCHAR"/>
             <arg column="block_timestamp" javaType="java.lang.Long" jdbcType="BIGINT"/>
@@ -14,7 +15,7 @@
     </resultMap>
     <sql id="Base_Column_List">
         id
-        ,hash, signer_account_id, receiver_account_id, block_timestamp, included_in_block_hash,
+        ,hash, synchronized_account_id,signer_account_id, receiver_account_id, block_timestamp, included_in_block_hash,
     index_in_chunk
     </sql>
 
@@ -55,12 +56,12 @@
     </insert>
 
     <insert id="insertList" parameterType="java.util.List">
-        insert into transactions (hash, signer_account_id, receiver_account_id,
+        insert into transactions (hash, synchronized_account_id,signer_account_id, receiver_account_id,
         block_timestamp, included_in_block_hash, index_in_chunk)
         values
         <foreach collection="list" item="item" index="index" separator=",">
             (
-            #{item.hash}, #{item.signerAccountId}, #{item.receiverAccountId},
+            #{item.hash},#{item.synchronizedAccountId}, #{item.signerAccountId}, #{item.receiverAccountId},
             #{item.blockTimestamp}, #{item.includedInBlockHash},
             #{item.indexInChunk}
             )
@@ -166,8 +167,8 @@
         select count(*)
         from transactions t
                  join transaction_actions ta on t.hash = ta.transaction_hash
-        and signer_account_id = #{userAccountId}
-          and !json_contains(ta.args ->'$.method_name', '"delete_request"')
-          and !json_contains(ta.args ->'$.method_name', '"confirm"')
+            and signer_account_id = #{userAccountId}
+            and !json_contains(ta.args ->'$.method_name', '"delete_request"')
+            and !json_contains(ta.args ->'$.method_name', '"confirm"')
     </select>
 </mapper>
