@@ -26,6 +26,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * 获取用户所有Transaction的服务(采集服务)
+ *
  * @author admin
  */
 @Service
@@ -70,7 +71,7 @@ public class GetAllTransactionService {
                  * Step1:查询DB，查询最新的一条数据（Timestamp最大），获得Timestamp_DB_Newest和Hash_DB_Newest
                  * Step2:判断是否写入（从response中获取第一条数据和最后一条数据的Timestamp和hash，Timestamp_Backend_Newest,Hash_Backend_Newest,Timestamp_Backend_End,Hash_Backend_End）
                  * - 数据库已是最新数据，不需要更新DB:Timestamp_DB_Newest == Timestamp_DB_Max && Hash_DB_Newest == Hash_Backend_Newest
-                 * - 从backend查询的数据全写入DB:(Timestamp_Backend_End > Timestamp_DB_Newest) || (Timestamp_Backend_End == Timestamp_DB_Newest &&  Hash_Backend_End != Hash_DB_Newest)
+                 * - 从backend查询的数据全写入DB:(Timestamp_Backend_First < Timestamp_DB_Oldest) || (Timestamp_Backend_End == Timestamp_DB_Newest &&  Hash_Backend_End != Hash_DB_Newest)
                  * - 部分写入：用hash匹配，匹配上后前面的数据全写入
                  * todo 我的建议是暂时不处理收据信息，一笔Transaction会产生多必收据信息，每条收据信息又对应一条收据结果。但是收据信息中包含了FunctionCall具体的方法等信息，对写快速调用合约接口有很大帮助
                  * Step3:发送通知，同步receipts相关信息,这里调用backed的nearcore-tx，本质是和访问nearcore的EXPERIMENTAL_tx_status
@@ -103,7 +104,7 @@ public class GetAllTransactionService {
                 }
 
                 // 全量写入
-                if (last.getBlockTimestamp().compareTo(dbOldest.getBlockTimestamp()) > 0 || (first.getBlockTimestamp().compareTo(dbOldest.getBlockTimestamp()) == 0 && !first.getHash().equals(dbOldest.getHash()))) {
+                if (first.getBlockTimestamp().compareTo(dbOldest.getBlockTimestamp()) < 0 || (first.getBlockTimestamp().compareTo(dbOldest.getBlockTimestamp()) == 0 && !first.getHash().equals(dbOldest.getHash()))) {
                     log.info("=============全量写入");
                     insertTransAndActions(trans, trans.size() - 1);
                     // 发送webSocket，继续查询 如果发生异常
