@@ -12,7 +12,6 @@ import com.happyzombie.springinitializr.service.NearRpcService;
 import com.happyzombie.springinitializr.service.RedisService;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.JobExecutionContext;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 import org.springframework.stereotype.Component;
 
@@ -22,14 +21,16 @@ import java.util.List;
 
 /**
  * get latest block
+ *
+ * @author admin
  */
 @Slf4j
 @Component
 public class NearLatestBlockJob extends QuartzJobBean {
-    @Autowired
+    @Resource
     NearRpcService nearRpcService;
 
-    @Autowired
+    @Resource
     RedisService redisService;
 
     @Resource
@@ -177,13 +178,13 @@ public class NearLatestBlockJob extends QuartzJobBean {
          * 统计火热合约
          * 判断key是否存在，存在+1，不存在初始化0
          */
-        redisService.zInitOrIncrement(RedisKey.HOT_TRANSACTIONS_FIND, receiverId);
+        redisService.zInitOrIncrement(RedisKey.HOT_TRANSACTIONS_FIND, receiverId, 1, 1);
 
         /**
          * 统计合约方法
          */
         final String hotMethodKey = String.format(RedisKey.HOT_TRANSACTIONS_METHOD_FIND, receiverId);
-        redisService.zInitOrIncrement(hotMethodKey, methodName);
+        redisService.zInitOrIncrement(hotMethodKey, methodName, 1, 1);
     }
 
 }

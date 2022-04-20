@@ -7,7 +7,6 @@ import com.happyzombie.springinitializr.common.util.DateUtil;
 import com.happyzombie.springinitializr.dao.TransactionsAnalyzeEntityMapper;
 import com.happyzombie.springinitializr.service.HotTransactionsFindService;
 import com.happyzombie.springinitializr.service.RedisService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +16,7 @@ import java.util.Set;
 
 @Service
 public class HotTransactionsFindServiceImpl implements HotTransactionsFindService {
-    @Autowired
+    @Resource
     RedisService redisService;
 
     @Resource
@@ -50,7 +49,7 @@ public class HotTransactionsFindServiceImpl implements HotTransactionsFindServic
         final List<SelectStatisticsDTO> transactionsAnalyzeEntities = transactionsAnalyzeEntityMapper.selectStatistics(request);
         return transactionsAnalyzeEntities;
     }
-    
+
     @Override
     public Long getStatisticsTransactionsTotalCount(GetStatisticsTransactionsRequest request) {
         final Long time = request.getMilliTime();

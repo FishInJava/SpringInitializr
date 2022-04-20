@@ -44,4 +44,9 @@ public interface TransactionsEntityMapper {
     Long getUserSynchronizedCount(@Param("userAccountId") String userAccountId);
 
     List<TransactionActionsDTO> getTransactionActions(@Param("userAccountId") String userAccountId);
+
+    /**
+     * 实际上是不全是Transfer
+     */
+    List<GetUserTransactionsDTO> getTransferTransaction(@Param("userAccountId") String userAccountId, @Param("blockTimestamp") Long blockTimestamp);
 }

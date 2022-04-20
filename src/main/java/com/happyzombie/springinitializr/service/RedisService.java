@@ -1,6 +1,6 @@
 package com.happyzombie.springinitializr.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -9,14 +9,19 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * @author admin
+ */
 @Service
+@Slf4j
 public class RedisService {
-    @Autowired
+    @Resource
     private RedisTemplate redisTemplate;
 
     /**
@@ -29,7 +34,7 @@ public class RedisService {
             operations.set(key, value);
             result = true;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("RedisService # set error ", e);
         }
         return result;
     }
@@ -45,7 +50,7 @@ public class RedisService {
             redisTemplate.expire(key, expireTime, timeUnit);
             result = true;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("RedisService # set error ", e);
         }
         return result;
     }
@@ -90,11 +95,12 @@ public class RedisService {
     /**
      * 读取缓存
      */
-    public Object get(final String key) {
-        Object result = null;
+    @SuppressWarnings("unchecked")
+    public <T> T get(final String key) {
+        Object result;
         ValueOperations<Serializable, Object> operations = redisTemplate.opsForValue();
         result = operations.get(key);
-        return result;
+        return (T) result;
     }
 
     /**
@@ -170,13 +176,13 @@ public class RedisService {
      * 如果没有则初始化一个score为1的值，有则+1
      * todo 这里应该有事务
      */
-    public <T> void zInitOrIncrement(String key, T value) {
+    public <T> void zInitOrIncrement(String key, T value, double init, double delta) {
         ZSetOperations<String, T> zSet = redisTemplate.opsForZSet();
         final Double aDouble = zSet.score(key, value);
         if (aDouble != null) {
-            zSet.incrementScore(key, value, 1);
+            zSet.incrementScore(key, value, delta);
         } else {
-            zSet.add(key, value, 1);
+            zSet.add(key, value, init);
         }
     }
 

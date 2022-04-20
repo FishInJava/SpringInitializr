@@ -30,7 +30,7 @@
         select
         <include refid="Base_Column_List"/>
         from transactions
-        where signer_account_id = #{0}
+        where synchronized_account_id = #{0}
         order by block_timestamp asc ,id desc limit 1;
     </select>
 
@@ -38,7 +38,7 @@
         select
         <include refid="Base_Column_List"/>
         from transactions
-        where signer_account_id = #{0}
+        where synchronized_account_id = #{0}
         order by block_timestamp desc ,id asc limit 1;
     </select>
 
@@ -203,5 +203,26 @@
         on ts.hash = ta.transaction_hash
             and synchronized_account_id = #{userAccountId}
         group by action_kind;
+    </select>
+
+    <select id="getTransferTransaction"
+            resultType="com.happyzombie.springinitializr.bean.dto.GetUserTransactionsDTO">
+        select t.hash,
+        t.signer_account_id signerAccountId,
+        t.receiver_account_id receiverAccountId,
+        t.block_timestamp blockTimestamp,
+        t.included_in_block_hash includedInBlockHash,
+        t.index_in_chunk indexInChunk,
+        ta.action_kind actionKind,
+        ta.args args
+        from transactions t
+        join transaction_actions ta on t.hash = ta.transaction_hash
+        and synchronized_account_id = #{userAccountId}
+        <if test="blockTimestamp != null">
+            and t.block_timestamp > #{blockTimestamp}
+        </if>
+        where json_contains(ta.args -> '$.method_name', '"add_request_and_confirm"')
+        or action_kind = 'Transfer'
+        order by block_timestamp desc
     </select>
 </mapper>

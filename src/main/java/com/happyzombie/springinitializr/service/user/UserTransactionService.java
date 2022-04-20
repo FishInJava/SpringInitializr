@@ -1,9 +1,8 @@
 package com.happyzombie.springinitializr.service.user;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.collect.Maps;
 import com.happyzombie.springinitializr.bean.ActionEnum;
-import com.happyzombie.springinitializr.bean.GeneralStr;
+import com.happyzombie.springinitializr.bean.GeneralConstant;
 import com.happyzombie.springinitializr.bean.dto.GetUserTransactionsDTO;
 import com.happyzombie.springinitializr.bean.dto.TransactionActionsDTO;
 import com.happyzombie.springinitializr.bean.request.user.GetUserTransactionsRequest;
@@ -15,11 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 查询用户Transaction
@@ -50,50 +45,7 @@ public class UserTransactionService {
         return userTransactions;
     }
 
-    /**
-     * 根据action查询用户操作
-     */
-    public HashMap<String, Map> getTransactionsByAction(GetUserTransactionsRequest request) {
-        final List<GetUserTransactionsDTO> userTransactions = transactionsEntityMapper.getTransactionsByAction(request);
-        if (CollectionUtil.isEmpty(userTransactions)) {
-            return Maps.newHashMap();
-        }
-        final HashMap<String, BigDecimal> in = new HashMap<>();
-        final HashMap<String, BigDecimal> out = new HashMap<>();
-        final String userAccountId = request.getUserAccountId();
-        // 数据处理
-        userTransactions.forEach(transaction -> {
-            // 时间转换
-            transaction.setBlockTimestampStr(DateUtil.timestampMilliToString(transaction.getBlockTimestamp()));
-            // 解析args获取转账数量
-            final ActionEnum.Transfer transfer = JsonUtil.jsonStringToObject(transaction.getArgs(), ActionEnum.Transfer.class);
-            // 转换单位
-            final BigDecimal deposit = new BigDecimal(transfer.getDeposit()).divide(new BigDecimal("1000000000000000000000000"), 4, RoundingMode.HALF_UP);
-            // 签名账户是输入账户，说明转出
-            if (transaction.getSignerAccountId().equals(userAccountId)) {
-                if (out.containsKey(transaction.getReceiverAccountId())) {
-                    final BigDecimal bigInteger = out.get(transaction.getReceiverAccountId());
-                    out.put(transaction.getReceiverAccountId(), deposit.add(bigInteger));
-                } else {
-                    out.put(transaction.getReceiverAccountId(), deposit);
-                }
-                // 接收账户是输入账户，说明转入
-            } else if (transaction.getReceiverAccountId().equals(userAccountId)) {
-                if (in.containsKey(transaction.getSignerAccountId())) {
-                    final BigDecimal bigInteger = in.get(transaction.getSignerAccountId());
-                    in.put(transaction.getSignerAccountId(), deposit.add(bigInteger));
-                } else {
-                    in.put(transaction.getSignerAccountId(), deposit);
-                }
-            }
-        });
-        final HashMap<String, Map> stringMapHashMap = new HashMap<>();
-        stringMapHashMap.put("in", in);
-        stringMapHashMap.put("out", out);
-        return stringMapHashMap;
-    }
-
-    private void createFirstAction(GetUserTransactionsDTO transaction) {
+    private static void createFirstAction(GetUserTransactionsDTO transaction) {
         final String actionKind = transaction.getActionKind();
         final String args = transaction.getArgs();
         final ActionEnum.BigAction firstAction = createAction(actionKind, args);
@@ -102,7 +54,7 @@ public class UserTransactionService {
         transaction.pushAction(firstAction);
     }
 
-    private ActionEnum.BigAction createAction(String actionKind, String args) {
+    private static ActionEnum.BigAction createAction(String actionKind, String args) {
         final ActionEnum action = ActionEnum.getAction(actionKind);
         switch (action) {
             case FUNCTION_CALL:
@@ -121,7 +73,7 @@ public class UserTransactionService {
     /**
      * 处理Action
      */
-    private void handlerAction(GetUserTransactionsDTO transaction) {
+    public static void handlerAction(GetUserTransactionsDTO transaction) {
         // 如果actionList是空，说明是从数据库查出来的第一条数据，处理后生成头Action
         if (CollectionUtil.isEmpty(transaction.getActionList())) {
             createFirstAction(transaction);
@@ -149,11 +101,11 @@ public class UserTransactionService {
      * 这里只有自己合约中的方法吗？
      * 自带方法
      */
-    private void handlerFunctionCallMethod(GetUserTransactionsDTO transaction) {
+    private static void handlerFunctionCallMethod(GetUserTransactionsDTO transaction) {
         final ActionEnum.BigAction firstAction = transaction.getFirstAction();
         final String args = firstAction.getArgs();
         switch (firstAction.getMethodName()) {
-            case GeneralStr.FUNCTION_CALL_ADD_REQUEST_AND_CONFIRM: {
+            case GeneralConstant.FUNCTION_CALL_ADD_REQUEST_AND_CONFIRM: {
                 /**
                  * 本账号的合约中自带方法add_request_and_confirm，该方法并不是最终方法
                  * 真正的请求的合约和方法在args中
@@ -171,7 +123,7 @@ public class UserTransactionService {
                 });
             }
             break;
-            case GeneralStr.FUNCTION_CALL_CONFIRM: {
+            case GeneralConstant.FUNCTION_CALL_CONFIRM: {
                 /**
                  * confirm识别出request_id
                  */
@@ -179,7 +131,7 @@ public class UserTransactionService {
                 firstAction.setRequestId(confirmRequest.getRequestId());
             }
             break;
-            case GeneralStr.FUNCTION_CALL_DELETE_REQUEST: {
+            case GeneralConstant.FUNCTION_CALL_DELETE_REQUEST: {
                 /**
                  * delete_request识别出request_id
                  */
@@ -197,16 +149,6 @@ public class UserTransactionService {
      */
     public Long getUserTransactionsCount(String userAccountId) {
         return transactionsEntityMapper.getUserTransactionsCount(userAccountId);
-    }
-
-    /**
-     * 获取用户交易分类信息
-     */
-    public void getTransactionsType(String userAccountId) {
-        // 总交易数目
-        final Long userSynchronizedCount = transactionsEntityMapper.getUserSynchronizedCount(userAccountId);
-        // Transfer数目（出/入）
-        // signer_account_id和receiver_account_id都不是userAccountId数目
     }
 
     /**
