@@ -113,7 +113,7 @@ public class GetAllTransactionService {
                     // 部分写入
                     AtomicReference<Integer> index = new AtomicReference<>();
                     final boolean anyMatch = trans.stream().anyMatch(transactionBaseInfo -> {
-                        final boolean equals = transactionBaseInfo.getHash().equals(dbOldest.getHash());
+                        final boolean equals = transactionBaseInfo.getHash().equals(dbNewest.getHash());
                         if (equals) {
                             index.set(trans.indexOf(transactionBaseInfo));
                         }
@@ -129,10 +129,6 @@ public class GetAllTransactionService {
                     // 部分写入
                     log.info("=============部分写入，写入量：{}", index.get());
                     insertTransAndActions(synchronizedAccountId, trans, index.get() - 1);
-
-                    // 发送webSocket，继续查询 todo 部分写入后应该不需要再查询了
-//                    final TransactionBaseInfo transactionBaseInfo = trans.get(index.get());
-//                    nearExplorerBackendService.getTransactionsListByAccountId(transactionBaseInfo.getHash(), transactionBaseInfo.getBlockTimestamp(), transactionBaseInfo.getTransactionIndex());
                 }
             } catch (Exception e) {
                 log.error("==========GetAllTransactionService error", e);
