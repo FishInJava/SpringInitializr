@@ -61,6 +61,8 @@ public enum ActionEnum {
         private String args;
         @JsonProperty("deposit")
         private String deposit;
+        // 目前Transfer中有该参数
+        private String amount;
         @JsonProperty("method_name")
         private String methodName;
         @JsonProperty("access_key")
@@ -89,6 +91,10 @@ public enum ActionEnum {
             private List<?> methodNames;
         }
 
+        public void setArgsDirect(String args) {
+            this.args = args;
+        }
+
         public void setArgs(String args) {
             if (StringUtil.isNotEmpty(args)) {
                 this.args = CompressAndDecompressUtil.base64Decode(args);
@@ -96,8 +102,6 @@ public enum ActionEnum {
             }
             this.args = args;
         }
-
-
     }
 
     @NoArgsConstructor

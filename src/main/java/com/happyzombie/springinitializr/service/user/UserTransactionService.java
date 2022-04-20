@@ -1,5 +1,6 @@
 package com.happyzombie.springinitializr.service.user;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Maps;
 import com.happyzombie.springinitializr.bean.ActionEnum;
 import com.happyzombie.springinitializr.bean.GeneralStr;
@@ -123,14 +124,19 @@ public class UserTransactionService {
         if (CollectionUtil.isEmpty(transaction.getActionList())) {
             createFirstAction(transaction);
         }
-        final ActionEnum.BigAction lastAction = transaction.getFirstAction();
-        if (lastAction.getType().equals(ActionEnum.FUNCTION_CALL.getValue())) {
+        final ActionEnum.BigAction firstAction = transaction.getFirstAction();
+        if (firstAction.getType().equals(ActionEnum.FUNCTION_CALL.getValue())) {
             // 处理FUNCTION_CALL中的方法
             handlerFunctionCallMethod(transaction);
-        } else if (lastAction.getType().equals(ActionEnum.ADD_KEY.getValue())) {
+        } else if (firstAction.getType().equals(ActionEnum.ADD_KEY.getValue())) {
             // 将receiverId从Permission参数中提取到外层（前端可以不用判断，直接使用）
-            final String receiverId = lastAction.getPermission().getReceiverId();
-            lastAction.setReceiverId(receiverId);
+            final String receiverId = firstAction.getPermission().getReceiverId();
+            firstAction.setReceiverId(receiverId);
+        } else if (firstAction.getType().equals(ActionEnum.TRANSFER.getValue())) {
+            final ObjectNode objectNode = JsonUtil.getObjectNode();
+            objectNode.put("deposit", firstAction.getDeposit());
+            objectNode.put("amount", firstAction.getAmount());
+            firstAction.setArgsDirect(JsonUtil.objectToString(objectNode));
         } else {
             log.info("对该Action不处理, 待观察,hash:{}", transaction.getHash());
         }
