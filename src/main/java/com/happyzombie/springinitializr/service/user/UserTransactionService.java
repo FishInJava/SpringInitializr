@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 查询用户Transaction
@@ -36,13 +37,18 @@ public class UserTransactionService {
             return userTransactions;
         }
         // 数据处理
-        userTransactions.forEach(transaction -> {
+        final List<GetUserTransactionsDTO> collect = userTransactions.stream().filter(transaction -> {
             // 时间转换
             transaction.setBlockTimestampStr(DateUtil.timestampMilliToString(transaction.getBlockTimestamp()));
             // 处理Action(生成action链)
             handlerAction(transaction);
-        });
-        return userTransactions;
+            // 过滤掉ADD_KEY和DELETE_KEY操作
+            if (transaction.getFirstAction().getType().equals(ActionEnum.ADD_KEY.getValue()) || transaction.getFirstAction().getType().equals(ActionEnum.DELETE_KEY.getValue())) {
+                return false;
+            }
+            return true;
+        }).collect(Collectors.toList());
+        return collect;
     }
 
     private static void createFirstAction(GetUserTransactionsDTO transaction) {
@@ -140,7 +146,7 @@ public class UserTransactionService {
             }
             break;
             default:
-                log.info("对该方法不处理：{}, hash:{}", firstAction.getMethodName(), transaction.getHash());
+//                log.info("对该方法不处理：{}, hash:{}", firstAction.getMethodName(), transaction.getHash());
         }
     }
 

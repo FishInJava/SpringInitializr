@@ -16,4 +16,8 @@ public class GetUserTransactionsRequest extends PageInfo {
      * 过滤掉的方法名称
      */
     private List<String> filterMethodName;
+    /**
+     * 过滤掉的action
+     */
+    private List<String> filterAction;
 }

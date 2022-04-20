@@ -157,7 +157,8 @@
                ta.args                  args
         from transactions t
                  join transaction_actions ta on t.hash = ta.transaction_hash
-            and synchronized_account_id = #{userAccountId}
+            and t.synchronized_account_id = #{userAccountId}
+            and ta.action_kind = 'FunctionCall'
             and !json_contains(ta.args ->'$.method_name', '"delete_request"')
             and !json_contains(ta.args ->'$.method_name', '"confirm"')
         order by block_timestamp desc
