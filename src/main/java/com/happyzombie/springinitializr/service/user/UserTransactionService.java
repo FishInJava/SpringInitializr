@@ -97,6 +97,8 @@ public class UserTransactionService {
         final String actionKind = transaction.getActionKind();
         final String args = transaction.getArgs();
         final ActionEnum.BigAction firstAction = createAction(actionKind, args);
+        // 设置默认ReceiverId
+        firstAction.setReceiverId(transaction.getReceiverAccountId());
         transaction.pushAction(firstAction);
     }
 
@@ -105,9 +107,9 @@ public class UserTransactionService {
         switch (action) {
             case FUNCTION_CALL:
             case ADD_KEY: {
-                final ActionEnum.BigAction functionCall = JsonUtil.jsonStringToObject(args, ActionEnum.BigAction.class);
-                functionCall.setType(action.getValue());
-                return functionCall;
+                final ActionEnum.BigAction bigAction = JsonUtil.jsonStringToObject(args, ActionEnum.BigAction.class);
+                bigAction.setType(action.getValue());
+                return bigAction;
             }
             default:
                 log.info("Action 未匹配");
@@ -148,9 +150,9 @@ public class UserTransactionService {
      * 自带方法
      */
     private void handlerFunctionCallMethod(GetUserTransactionsDTO transaction) {
-        final ActionEnum.BigAction action = transaction.getFirstAction();
-        final String args = action.getArgs();
-        switch (action.getMethodName()) {
+        final ActionEnum.BigAction firstAction = transaction.getFirstAction();
+        final String args = firstAction.getArgs();
+        switch (firstAction.getMethodName()) {
             case GeneralStr.FUNCTION_CALL_ADD_REQUEST_AND_CONFIRM: {
                 /**
                  * 本账号的合约中自带方法add_request_and_confirm，该方法并不是最终方法
@@ -174,7 +176,7 @@ public class UserTransactionService {
                  * confirm识别出request_id
                  */
                 final ActionEnum.FunctionCall.ConfirmRequest confirmRequest = JsonUtil.jsonStringToObject(args, ActionEnum.FunctionCall.ConfirmRequest.class);
-                action.setRequestId(confirmRequest.getRequestId());
+                firstAction.setRequestId(confirmRequest.getRequestId());
             }
             break;
             case GeneralStr.FUNCTION_CALL_DELETE_REQUEST: {
@@ -182,11 +184,11 @@ public class UserTransactionService {
                  * delete_request识别出request_id
                  */
                 final ActionEnum.FunctionCall.DeleteRequest deleteRequest = JsonUtil.jsonStringToObject(args, ActionEnum.FunctionCall.DeleteRequest.class);
-                action.setRequestId(deleteRequest.getRequestId());
+                firstAction.setRequestId(deleteRequest.getRequestId());
             }
             break;
             default:
-                log.info("对该方法不处理：{}, hash:{}", action.getMethodName(), transaction.getHash());
+                log.info("对该方法不处理：{}, hash:{}", firstAction.getMethodName(), transaction.getHash());
         }
     }
 
