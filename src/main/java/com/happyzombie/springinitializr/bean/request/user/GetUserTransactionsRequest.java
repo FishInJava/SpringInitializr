@@ -11,6 +11,7 @@ import java.util.List;
 @Data
 public class GetUserTransactionsRequest extends PageInfo {
     private String userAccountId;
+    private String action;
     /**
      * 过滤掉的方法名称
      */

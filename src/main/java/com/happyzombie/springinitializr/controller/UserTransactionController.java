@@ -2,9 +2,13 @@ package com.happyzombie.springinitializr.controller;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.happyzombie.springinitializr.bean.ActionEnum;
 import com.happyzombie.springinitializr.bean.dto.GetUserTransactionsDTO;
+import com.happyzombie.springinitializr.bean.dto.TransactionActionsDTO;
 import com.happyzombie.springinitializr.bean.request.user.GetUserTransactionsRequest;
+import com.happyzombie.springinitializr.bean.response.nearcore.ViewAccountResponse;
 import com.happyzombie.springinitializr.common.bean.Result;
+import com.happyzombie.springinitializr.common.util.AssertUtil;
 import com.happyzombie.springinitializr.service.NearExplorerBackendService;
 import com.happyzombie.springinitializr.service.NearRpcServiceImpl;
 import com.happyzombie.springinitializr.service.user.UserTransactionService;
@@ -19,6 +23,8 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author admin
@@ -40,25 +46,43 @@ public class UserTransactionController {
     @CrossOrigin
     @RequestMapping(value = "/getUserTransactions", method = RequestMethod.POST)
     public Result<Object> getUserTransactions(@RequestBody GetUserTransactionsRequest request) {
-        // 账号有效性校验 todo 账号查询的有问题，5min前还ok，看下官网是否参数变了
-//        final ViewAccountResponse viewAccountResponse = nearRpcService.viewAccount(request.getUserAccountId());
-//        Optional.of(viewAccountResponse).ifPresent(viewAccount -> {
-//            // 更新数据库
-//            AssertUtil.shouldBeTrue(viewAccountResponse.getResult() != null, "账号无效：" + request.getUserAccountId());
-//            nearExplorerBackendService.getNewestTransactionsListByAccountId(request.getUserAccountId());
-//        });
-        nearExplorerBackendService.getNewestTransactionsListByAccountId(request.getUserAccountId());
+        // 账号有效性校验
+        checkAccountAndUpdate(request.getUserAccountId());
         Page page = PageHelper.startPage(request.getPageNum(), request.getPageSize());
         request.setStartRow(page.getStartRow());
         request.setEndRow(page.getEndRow() - 1);
         // 无论是否更新成功都查询数据
         final List<GetUserTransactionsDTO> userTransactions = userTransactionService.getUserTransactions(request);
+        // 查询用户actions
+        final List<TransactionActionsDTO> actions = userTransactionService.getTransactionActions(request.getUserAccountId());
         // 查询总数
         final Long total = userTransactionService.getUserTransactionsCount(request.getUserAccountId());
         final HashMap<String, Object> result = new HashMap<>();
         result.put("list", userTransactions);
         result.put("total", total);
+        result.put("actions", actions);
         return Result.successResult(result);
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/getTransferTransactions", method = RequestMethod.POST)
+    public Result<Object> getTransferTransactions(@RequestBody GetUserTransactionsRequest request) {
+        // 账号有效性校验
+        checkAccountAndUpdate(request.getUserAccountId());
+        // 查询用户Transfer的交易
+        request.setAction(ActionEnum.TRANSFER.getValue());
+        // 查询数据
+        final HashMap<String, Map> transactionsByAction = userTransactionService.getTransactionsByAction(request);
+        return Result.successResult(transactionsByAction);
+    }
+
+    private void checkAccountAndUpdate(String accountId) {
+        final ViewAccountResponse viewAccountResponse = nearRpcService.viewAccount(accountId);
+        Optional.of(viewAccountResponse).ifPresent(viewAccount -> {
+            // 更新数据库
+            AssertUtil.shouldBeTrue(viewAccountResponse.getResult() != null, "账号无效：" + accountId);
+            nearExplorerBackendService.getNewestTransactionsListByAccountId(accountId);
+        });
     }
 
 }

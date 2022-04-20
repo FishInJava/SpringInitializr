@@ -1,6 +1,7 @@
 package com.happyzombie.springinitializr.dao;
 
 import com.happyzombie.springinitializr.bean.dto.GetUserTransactionsDTO;
+import com.happyzombie.springinitializr.bean.dto.TransactionActionsDTO;
 import com.happyzombie.springinitializr.bean.entity.TransactionsEntity;
 import com.happyzombie.springinitializr.bean.request.user.GetUserTransactionsRequest;
 import org.apache.ibatis.annotations.Param;
@@ -36,5 +37,11 @@ public interface TransactionsEntityMapper {
 
     List<GetUserTransactionsDTO> getUserTransactions(GetUserTransactionsRequest request);
 
+    List<GetUserTransactionsDTO> getTransactionsByAction(GetUserTransactionsRequest request);
+
     Long getUserTransactionsCount(@Param("userAccountId") String userAccountId);
+
+    Long getUserSynchronizedCount(@Param("userAccountId") String userAccountId);
+
+    List<TransactionActionsDTO> getTransactionActions(@Param("userAccountId") String userAccountId);
 }

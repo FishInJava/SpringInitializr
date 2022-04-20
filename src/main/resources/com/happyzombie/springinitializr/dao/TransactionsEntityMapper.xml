@@ -157,9 +157,27 @@
                ta.args                  args
         from transactions t
                  join transaction_actions ta on t.hash = ta.transaction_hash
-            and signer_account_id = #{userAccountId}
+            and synchronized_account_id = #{userAccountId}
             and !json_contains(ta.args ->'$.method_name', '"delete_request"')
             and !json_contains(ta.args ->'$.method_name', '"confirm"')
+        order by block_timestamp desc
+    </select>
+
+    <select id="getTransactionsByAction"
+            parameterType="com.happyzombie.springinitializr.bean.request.user.GetUserTransactionsRequest"
+            resultType="com.happyzombie.springinitializr.bean.dto.GetUserTransactionsDTO">
+        select t.hash,
+               t.signer_account_id      signerAccountId,
+               t.receiver_account_id    receiverAccountId,
+               t.block_timestamp        blockTimestamp,
+               t.included_in_block_hash includedInBlockHash,
+               t.index_in_chunk         indexInChunk,
+               ta.action_kind           actionKind,
+               ta.args                  args
+        from transactions t
+                 join transaction_actions ta on t.hash = ta.transaction_hash
+            and t.synchronized_account_id = #{userAccountId}
+            and ta.action_kind = #{action}
         order by block_timestamp desc
     </select>
 
@@ -167,8 +185,23 @@
         select count(*)
         from transactions t
                  join transaction_actions ta on t.hash = ta.transaction_hash
-            and signer_account_id = #{userAccountId}
+            and synchronized_account_id = #{userAccountId}
             and !json_contains(ta.args ->'$.method_name', '"delete_request"')
             and !json_contains(ta.args ->'$.method_name', '"confirm"')
+    </select>
+
+    <select id="getUserSynchronizedCount" resultType="java.lang.Long">
+        select count(*)
+        from transactions t
+        where synchronized_account_id = #{userAccountId}
+    </select>
+
+    <select id="getTransactionActions" resultType="com.happyzombie.springinitializr.bean.dto.TransactionActionsDTO">
+        select count(*) as count, action_kind as actionKind
+        from transactions ts
+            join transaction_actions ta
+        on ts.hash = ta.transaction_hash
+            and synchronized_account_id = #{userAccountId}
+        group by action_kind;
     </select>
 </mapper>
