@@ -31,17 +31,20 @@ public class DbLatestBlockService {
     @Resource
     TransactionAnalyzeFilterEntityMapper transactionAnalyzeFilterEntityMapper;
 
-    private static final HashSet<String> SIGNER_ID = Sets.newHashSet("relay.aurora", "app.nearcrowd.near", "c");
-    private static final HashSet<String> RECEIVER_ID = Sets.newHashSet("aurora", "app.nearcrowd.near", "c");
+    private static final HashSet<String> SIGNER_ID = Sets.newHashSet("relay.aurora", "app.nearcrowd.near");
+    private static final HashSet<String> RECEIVER_ID = Sets.newHashSet("aurora", "app.nearcrowd.near", "priceoracle.near");
     private static final HashMap<String, HashSet<String>> RECEIVER_ID_METHOD = Maps.newHashMap();
 
     static {
         // aurora
-        final HashSet<String> auroraMethods = Sets.newHashSet("submit");
+        final HashSet<String> auroraMethods = Sets.newHashSet("submit", "deposit", "ft_transfer_call");
         RECEIVER_ID_METHOD.put("aurora", auroraMethods);
         // app.nearcrowd.near
         final HashSet<String> nearcrowdMethod = Sets.newHashSet("add_tasks", "finalize_task", "approve_solution", "finalize_challenged_task", "return_assignment_admin", "challenge", "starfish_reward2", "starfish_reward3", "starfish_reward4");
         RECEIVER_ID_METHOD.put("app.nearcrowd.near", nearcrowdMethod);
+        // priceoracle.near
+        final HashSet<String> priceoracleMethod = Sets.newHashSet("report_prices", "oracle_call");
+        RECEIVER_ID_METHOD.put("priceoracle.near", priceoracleMethod);
     }
 
     private static boolean isInReceiverMethod(String receiverId, String method) {
