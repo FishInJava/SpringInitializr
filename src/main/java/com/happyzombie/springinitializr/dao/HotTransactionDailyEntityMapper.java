@@ -19,4 +19,6 @@ public interface HotTransactionDailyEntityMapper {
     int updateByPrimaryKeyWithBLOBs(HotTransactionDailyEntity row);
 
     int updateByPrimaryKey(HotTransactionDailyEntity row);
+
+    HotTransactionDailyEntity selectByTime(Long time);
 }

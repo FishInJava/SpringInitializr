@@ -3,10 +3,14 @@ package com.happyzombie.springinitializr.controller;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.happyzombie.springinitializr.bean.dto.HotTransactionDTO;
 import com.happyzombie.springinitializr.bean.dto.SelectStatisticsDTO;
+import com.happyzombie.springinitializr.bean.entity.HotTransactionDailyEntity;
 import com.happyzombie.springinitializr.bean.entity.TransactionAnalyzeFilterEntity;
+import com.happyzombie.springinitializr.bean.request.statistics.GetHotAccountIdByTimeRequest;
 import com.happyzombie.springinitializr.bean.request.statistics.GetStatisticsTransactionsRequest;
 import com.happyzombie.springinitializr.common.bean.Result;
+import com.happyzombie.springinitializr.common.util.JsonUtil;
 import com.happyzombie.springinitializr.service.impl.HotTransactionsFindServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.ZSetOperations;
@@ -21,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -44,6 +49,20 @@ public class NearAnalyzeController {
         final HashMap<String, Object> result = new HashMap<>();
         result.put("list", hotAccountId);
         result.put("total", hotAccountIdTotalCount);
+        return Result.successResult(result);
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/getHotAccountIdByTime", method = RequestMethod.POST)
+    public Result<Object> getHotAccountIdByTime(@RequestBody GetHotAccountIdByTimeRequest request) {
+        final HotTransactionDailyEntity hotAccountIdByTime = hotTransactionsFindService.getHotAccountIdByTime(request);
+        final HashMap<String, Object> result = new HashMap<>();
+        if (hotAccountIdByTime == null) {
+            result.put("list", null);
+            return Result.successResult(result);
+        }
+        final LinkedList<HotTransactionDTO> hotTransactions = JsonUtil.jsonStringToList(hotAccountIdByTime.getArgs(), HotTransactionDTO.class);
+        result.put("list", hotTransactions);
         return Result.successResult(result);
     }
 

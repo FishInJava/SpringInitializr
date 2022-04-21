@@ -2,9 +2,12 @@ package com.happyzombie.springinitializr.service.impl;
 
 import com.happyzombie.springinitializr.bean.RedisKey;
 import com.happyzombie.springinitializr.bean.dto.SelectStatisticsDTO;
+import com.happyzombie.springinitializr.bean.entity.HotTransactionDailyEntity;
 import com.happyzombie.springinitializr.bean.entity.TransactionAnalyzeFilterEntity;
+import com.happyzombie.springinitializr.bean.request.statistics.GetHotAccountIdByTimeRequest;
 import com.happyzombie.springinitializr.bean.request.statistics.GetStatisticsTransactionsRequest;
 import com.happyzombie.springinitializr.common.util.DateUtil;
+import com.happyzombie.springinitializr.dao.HotTransactionDailyEntityMapper;
 import com.happyzombie.springinitializr.dao.TransactionAnalyzeFilterEntityMapper;
 import com.happyzombie.springinitializr.dao.TransactionsAnalyzeEntityMapper;
 import com.happyzombie.springinitializr.service.HotTransactionsFindService;
@@ -30,10 +33,17 @@ public class HotTransactionsFindServiceImpl implements HotTransactionsFindServic
     @Resource
     TransactionAnalyzeFilterEntityMapper transactionAnalyzeFilterEntityMapper;
 
+    @Resource
+    HotTransactionDailyEntityMapper hotTransactionDailyEntityMapper;
+
     @Override
     public Set<ZSetOperations.TypedTuple<String>> getHotAccountId(long start, long end) {
         final Set<ZSetOperations.TypedTuple<String>> typedTuples = redisService.zReverseRangeWithScores(RedisKey.HOT_TRANSACTIONS_FIND, start, end);
         return typedTuples;
+    }
+
+    public HotTransactionDailyEntity getHotAccountIdByTime(GetHotAccountIdByTimeRequest request) {
+        return hotTransactionDailyEntityMapper.selectByTime(request.getMilliTime());
     }
 
     @Override

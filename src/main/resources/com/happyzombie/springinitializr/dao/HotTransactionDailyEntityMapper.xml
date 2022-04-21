@@ -94,4 +94,12 @@
         set create_time = #{createTime,jdbcType=BIGINT},
             where id = #{id,jdbcType=BIGINT}
     </update>
+    <select id="selectByTime" parameterType="java.lang.Long" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from hot_transaction_daily
+        where create_time = #{0}
+    </select>
 </mapper>
