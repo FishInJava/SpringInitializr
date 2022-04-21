@@ -16,6 +16,9 @@ import javax.annotation.Resource;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * @author admin
+ */
 @Service
 public class HotTransactionsFindServiceImpl implements HotTransactionsFindService {
     @Resource

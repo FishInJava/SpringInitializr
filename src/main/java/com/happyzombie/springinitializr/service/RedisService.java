@@ -67,10 +67,13 @@ public class RedisService {
     /**
      * 批量删除key
      */
+    @SuppressWarnings("unchecked")
     public void removePattern(final String pattern) {
         Set<Serializable> keys = redisTemplate.keys(pattern);
-        if (keys.size() > 0) {
+        if (keys != null && keys.size() > 0) {
             redisTemplate.delete(keys);
+        } else {
+            log.error("批量删除失败，key:{}", pattern);
         }
     }
 
@@ -79,6 +82,7 @@ public class RedisService {
      *
      * @param key
      */
+    @SuppressWarnings("unchecked")
     public void remove(final String key) {
         if (exists(key)) {
             redisTemplate.delete(key);

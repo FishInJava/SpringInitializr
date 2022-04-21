@@ -19,6 +19,8 @@ import java.time.format.DateTimeFormatter;
 public class DateUtil {
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
+    private static final DateTimeFormatter FORMATTER_DAY = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
     private static final ZoneOffset CHINA_ZONE_OFFSET = ZoneOffset.of("+8");
     private static final ZoneId CHINA_ZONE_ID = ZoneId.of("CTT", ZoneId.SHORT_IDS);
 
@@ -32,9 +34,25 @@ public class DateUtil {
         return ctt.toEpochMilli();
     }
 
-    public static Long dataTimeStrToMilli(String dataStr) {
+    public static Long dateTimeStrToMilli(String dataStr) {
         // 格式是yyyy-MM-dd HH:mm:ss
         return LocalDateTime.parse(dataStr, FORMATTER).toInstant(CHINA_ZONE_OFFSET).toEpochMilli();
+    }
+
+    public static Long dateStrToMilli(String dataStr) {
+        // 格式是yyyy-MM-dd
+        return LocalDate.parse(dataStr, FORMATTER_DAY).atStartOfDay().toInstant(CHINA_ZONE_OFFSET).toEpochMilli();
+    }
+    
+    public static LocalDate now() {
+        return LocalDate.now(CHINA_ZONE_ID);
+    }
+
+    /**
+     * 今天的milli值
+     */
+    public static Long dayMilli() {
+        return DateUtil.dateStrToMilli(DateUtil.now().toString());
     }
 
     /**

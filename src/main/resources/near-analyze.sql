@@ -5,7 +5,7 @@ DATABASE `near_analyze` CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci';
 -- transactions表
 CREATE TABLE `near_analyze`.`transactions`
 (
-    id                        BIGINT auto_increment,
+    `id`                      BIGINT       NOT NULL AUTO_INCREMENT,
     `hash`                    VARCHAR(128) NOT NULL COMMENT '交易hash',
     `synchronized_account_id` VARCHAR(64)  NOT NULL COMMENT '同步的account-id',
     `signer_account_id`       VARCHAR(64),
@@ -22,7 +22,7 @@ COMMENT='交易信息表,数据来源是near-explorer-backend的transactions-lis
 -- transaction_actions表
 CREATE TABLE `near_analyze`.`transaction_actions`
 (
-    id                 bigint auto_increment,
+    `id`               BIGINT       NOT NULL AUTO_INCREMENT,
     `transaction_hash` VARCHAR(128) NOT NULL COMMENT '交易hash',
     `action_kind`      VARCHAR(40) COMMENT '交易动作',
     `args`             JSON,
@@ -85,3 +85,12 @@ CREATE TABLE `near_analyze`.`non_fungible_tokens`
     `reference_hash` VARCHAR(128),
     PRIMARY KEY (`account_id`)
 ) ENGINE=INNODB CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='nft信息表';
+
+-- 每日火热合约入库
+CREATE TABLE `near_analyze`.`hot_transaction_daily`
+(
+    `id`          BIGINT NOT NULL AUTO_INCREMENT,
+    `create_time` BIGINT NULL COMMENT '交易时间（要取交易时间，或者区块产生时间）',
+    `args`        JSON,
+    PRIMARY KEY (`id`)
+) ENGINE=INNODB CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='火热合约每日排名';
