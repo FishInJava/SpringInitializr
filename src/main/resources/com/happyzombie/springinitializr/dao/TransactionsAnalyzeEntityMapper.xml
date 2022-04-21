@@ -177,4 +177,10 @@
             create_time      = #{createTime,jdbcType=BIGINT}
         where id = #{id,jdbcType=BIGINT}
     </update>
+
+    <delete id="deleteByTime" parameterType="java.lang.Long">
+        delete
+        from transaction_analyze
+        where create_time <![CDATA[ <= ]]> #{0}
+    </delete>
 </mapper>

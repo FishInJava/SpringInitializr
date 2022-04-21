@@ -22,4 +22,6 @@ public interface TransactionsAnalyzeEntityMapper {
     int updateByPrimaryKey(TransactionsAnalyzeEntity row);
 
     Long getStatisticsTransactionsTotalCount(GetStatisticsTransactionsRequest row);
+
+    int deleteByTime(Long endTime);
 }

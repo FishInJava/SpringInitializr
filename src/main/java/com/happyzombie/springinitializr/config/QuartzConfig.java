@@ -1,7 +1,8 @@
 package com.happyzombie.springinitializr.config;
 
 
-import com.happyzombie.springinitializr.quartz.NearLatestBlockJob;
+import com.happyzombie.springinitializr.quartz.latestblock.NearLatestBlockJob;
+import com.happyzombie.springinitializr.quartz.latestblock.TransactionAnalyzeCleanJob;
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
 import org.quartz.SimpleScheduleBuilder;
@@ -19,23 +20,43 @@ public class QuartzConfig {
 
     @Bean
     @ConditionalOnExpression("#{'open'.equals(environment['near.latest.block.job'])}")
-    public JobDetail getTradeJobBean() {
-        // 交易量统计
-        return JobBuilder.newJob(NearLatestBlockJob.class).withIdentity("nearLatestBlockJob").storeDurably().build();
+    public JobDetail getNearLatestBlockJob() {
+        // near最新区块处理任务
+        return JobBuilder.newJob(NearLatestBlockJob.class).withIdentity("getNearLatestBlockJob").storeDurably().build();
     }
 
     @Bean
     @ConditionalOnExpression("#{'open'.equals(environment['near.latest.block.job'])}")
-    public Trigger tradeJobQuartzTrigger() {
+    public Trigger nearLatestBlockJobTrigger() {
         SimpleScheduleBuilder scheduleBuilder = SimpleScheduleBuilder
                 .simpleSchedule()
-                //设置时间周期单位秒
+                // 设置时间周期(秒):1s
                 .withIntervalInSeconds(1)
                 .repeatForever();
-        return TriggerBuilder.newTrigger().forJob(getTradeJobBean())
-                .withIdentity("nearLatestBlockJob")
+        return TriggerBuilder.newTrigger().forJob(getNearLatestBlockJob())
+                .withIdentity("nearLatestBlockJobTrigger")
                 .withSchedule(scheduleBuilder)
                 .build();
     }
 
+    @Bean
+    @ConditionalOnExpression("#{'open'.equals(environment['transaction.analyze.cleanJob.job'])}")
+    public JobDetail getTransactionAnalyzeCleanJob() {
+        // transaction_analyze表定时定理任务
+        return JobBuilder.newJob(TransactionAnalyzeCleanJob.class).withIdentity("getTransactionAnalyzeCleanJob").storeDurably().build();
+    }
+
+    @Bean
+    @ConditionalOnExpression("#{'open'.equals(environment['transaction.analyze.cleanJob.job'])}")
+    public Trigger transactionAnalyzeCleanJobTrigger() {
+        SimpleScheduleBuilder scheduleBuilder = SimpleScheduleBuilder
+                .simpleSchedule()
+                // 设置时间周期(秒)：1h
+                .withIntervalInSeconds(3600)
+                .repeatForever();
+        return TriggerBuilder.newTrigger().forJob(getTransactionAnalyzeCleanJob())
+                .withIdentity("transactionAnalyzeCleanJobTrigger")
+                .withSchedule(scheduleBuilder)
+                .build();
+    }
 }
