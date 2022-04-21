@@ -4,10 +4,10 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.happyzombie.springinitializr.bean.dto.SelectStatisticsDTO;
+import com.happyzombie.springinitializr.bean.entity.TransactionAnalyzeFilterEntity;
 import com.happyzombie.springinitializr.bean.request.statistics.GetStatisticsTransactionsRequest;
 import com.happyzombie.springinitializr.common.bean.Result;
 import com.happyzombie.springinitializr.service.impl.HotTransactionsFindServiceImpl;
-import com.happyzombie.springinitializr.service.reffinance.RefFinanceService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.validation.annotation.Validated;
@@ -35,9 +35,6 @@ public class NearAnalyzeController {
     @Resource
     HotTransactionsFindServiceImpl hotTransactionsFindService;
 
-    @Resource
-    RefFinanceService refFinanceService;
-
     @CrossOrigin
     @RequestMapping(value = "/getHotAccountId", method = RequestMethod.POST)
     public Result<Object> getHotAccountId(@RequestBody PageInfo pageInfo) {
@@ -60,7 +57,6 @@ public class NearAnalyzeController {
     @CrossOrigin
     @RequestMapping(value = "/getStatisticsTransactions", method = RequestMethod.POST)
     public Result<Object> getStatisticsTransactions(@Valid @RequestBody GetStatisticsTransactionsRequest request) {
-        // todo 请求参数限制
         Page page = PageHelper.startPage(request.getPageNum(), request.getPageSize());
         request.setStartRow(page.getStartRow());
         request.setEndRow(page.getEndRow() - 1);
@@ -68,6 +64,20 @@ public class NearAnalyzeController {
         final Long statisticsTransactionsTotalCount = hotTransactionsFindService.getStatisticsTransactionsTotalCount(request);
         final HashMap<String, Object> result = new HashMap<>();
         result.put("list", statisticsTransactions);
+        result.put("total", statisticsTransactionsTotalCount);
+        return Result.successResult(result);
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/getStatisticsFilterTransactions", method = RequestMethod.POST)
+    public Result<Object> getStatisticsFilterTransactions(@Valid @RequestBody GetStatisticsTransactionsRequest request) {
+        Page page = PageHelper.startPage(request.getPageNum(), request.getPageSize());
+        request.setStartRow(page.getStartRow());
+        request.setEndRow(page.getEndRow() - 1);
+        final List<TransactionAnalyzeFilterEntity> statisticsFilterTransactions = hotTransactionsFindService.getStatisticsFilterTransactions(request);
+        final Long statisticsTransactionsTotalCount = hotTransactionsFindService.getStatisticsFilterTransactionsTotalCount(request);
+        final HashMap<String, Object> result = new HashMap<>();
+        result.put("list", statisticsFilterTransactions);
         result.put("total", statisticsTransactionsTotalCount);
         return Result.successResult(result);
     }

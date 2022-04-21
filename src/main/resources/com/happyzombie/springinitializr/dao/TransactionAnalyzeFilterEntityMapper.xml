@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.happyzombie.springinitializr.dao.TransactionAnalyzeFilterEntityMapper">
+    <resultMap id="BaseResultMap" type="com.happyzombie.springinitializr.bean.entity.TransactionAnalyzeFilterEntity">
+        <constructor>
+            <idArg column="id" javaType="java.lang.Long" jdbcType="BIGINT"/>
+            <arg column="signer_id" javaType="java.lang.String" jdbcType="VARCHAR"/>
+            <arg column="receiver_id" javaType="java.lang.String" jdbcType="VARCHAR"/>
+            <arg column="actions" javaType="java.lang.String" jdbcType="VARCHAR"/>
+            <arg column="is_simple_action" javaType="java.lang.Byte" jdbcType="TINYINT"/>
+            <arg column="method_name" javaType="java.lang.String" jdbcType="VARCHAR"/>
+            <arg column="chunk_id" javaType="java.lang.String" jdbcType="VARCHAR"/>
+            <arg column="create_time" javaType="java.lang.Long" jdbcType="BIGINT"/>
+        </constructor>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id
+        , signer_id, receiver_id, actions, is_simple_action, method_name, chunk_id, create_time
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from transaction_analyze_filter
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete
+        from transaction_analyze_filter
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+    <insert id="insert" parameterType="com.happyzombie.springinitializr.bean.entity.TransactionsAnalyzeEntity">
+        insert into transaction_analyze_filter (id, signer_id, receiver_id,
+                                                actions, is_simple_action, method_name,
+                                                chunk_id, create_time)
+        values (#{id,jdbcType=BIGINT}, #{signerId,jdbcType=VARCHAR}, #{receiverId,jdbcType=VARCHAR},
+                #{actions,jdbcType=VARCHAR}, #{isSimpleAction,jdbcType=TINYINT}, #{methodName,jdbcType=VARCHAR},
+                #{chunkId,jdbcType=VARCHAR}, #{createTime,jdbcType=BIGINT})
+    </insert>
+    <insert id="insertSelective"
+            parameterType="com.happyzombie.springinitializr.bean.entity.TransactionAnalyzeFilterEntity">
+        insert into transaction_analyze_filter
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="signerId != null">
+                signer_id,
+            </if>
+            <if test="receiverId != null">
+                receiver_id,
+            </if>
+            <if test="actions != null">
+                actions,
+            </if>
+            <if test="isSimpleAction != null">
+                is_simple_action,
+            </if>
+            <if test="methodName != null">
+                method_name,
+            </if>
+            <if test="chunkId != null">
+                chunk_id,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="signerId != null">
+                #{signerId,jdbcType=VARCHAR},
+            </if>
+            <if test="receiverId != null">
+                #{receiverId,jdbcType=VARCHAR},
+            </if>
+            <if test="actions != null">
+                #{actions,jdbcType=VARCHAR},
+            </if>
+            <if test="isSimpleAction != null">
+                #{isSimpleAction,jdbcType=TINYINT},
+            </if>
+            <if test="methodName != null">
+                #{methodName,jdbcType=VARCHAR},
+            </if>
+            <if test="chunkId != null">
+                #{chunkId,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=BIGINT},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective"
+            parameterType="com.happyzombie.springinitializr.bean.entity.TransactionAnalyzeFilterEntity">
+        update transaction_analyze_filter
+        <set>
+            <if test="signerId != null">
+                signer_id = #{signerId,jdbcType=VARCHAR},
+            </if>
+            <if test="receiverId != null">
+                receiver_id = #{receiverId,jdbcType=VARCHAR},
+            </if>
+            <if test="actions != null">
+                actions = #{actions,jdbcType=VARCHAR},
+            </if>
+            <if test="isSimpleAction != null">
+                is_simple_action = #{isSimpleAction,jdbcType=TINYINT},
+            </if>
+            <if test="methodName != null">
+                method_name = #{methodName,jdbcType=VARCHAR},
+            </if>
+            <if test="chunkId != null">
+                chunk_id = #{chunkId,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=BIGINT},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey"
+            parameterType="com.happyzombie.springinitializr.bean.entity.TransactionAnalyzeFilterEntity">
+        update transaction_analyze_filter
+        set signer_id        = #{signerId,jdbcType=VARCHAR},
+            receiver_id      = #{receiverId,jdbcType=VARCHAR},
+            actions          = #{actions,jdbcType=VARCHAR},
+            is_simple_action = #{isSimpleAction,jdbcType=TINYINT},
+            method_name      = #{methodName,jdbcType=VARCHAR},
+            chunk_id         = #{chunkId,jdbcType=VARCHAR},
+            create_time      = #{createTime,jdbcType=BIGINT}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <delete id="deleteByTime" parameterType="java.lang.Long">
+        delete
+        from transaction_analyze_filter
+        where create_time <![CDATA[ <= ]]> #{0}
+    </delete>
+
+    <select id="selectStatistics"
+            parameterType="com.happyzombie.springinitializr.bean.request.statistics.GetStatisticsTransactionsRequest"
+            resultType="com.happyzombie.springinitializr.bean.dto.SelectStatisticsDTO">
+        select count(*) as count,
+        <choose>
+            <when test="flag == 1">
+                signer_id as value
+            </when>
+            <otherwise>
+                receiver_id as value
+            </otherwise>
+        </choose>
+        from transaction_analyze_filter
+        where is_simple_action = 1
+        and create_time between #{beginTime} and #{endTime}
+        <choose>
+            <when test="flag == 1">
+                group by signer_id
+            </when>
+            <otherwise>
+                group by receiver_id
+            </otherwise>
+        </choose>
+        order by count desc
+    </select>
+
+    <select id="getStatisticsTransactionsTotalCount"
+            parameterType="com.happyzombie.springinitializr.bean.request.statistics.GetStatisticsTransactionsRequest"
+            resultType="java.lang.Long">
+        select count(*) from (
+        select count(*)
+        from transaction_analyze_filter
+        where is_simple_action = 1
+        and create_time between #{beginTime} and #{endTime}
+        <choose>
+            <when test="flag == 1">
+                group by signer_id
+            </when>
+            <otherwise>
+                group by receiver_id
+            </otherwise>
+        </choose>
+        ) as a
+    </select>
+</mapper>

@@ -2,8 +2,10 @@ package com.happyzombie.springinitializr.service.impl;
 
 import com.happyzombie.springinitializr.bean.RedisKey;
 import com.happyzombie.springinitializr.bean.dto.SelectStatisticsDTO;
+import com.happyzombie.springinitializr.bean.entity.TransactionAnalyzeFilterEntity;
 import com.happyzombie.springinitializr.bean.request.statistics.GetStatisticsTransactionsRequest;
 import com.happyzombie.springinitializr.common.util.DateUtil;
+import com.happyzombie.springinitializr.dao.TransactionAnalyzeFilterEntityMapper;
 import com.happyzombie.springinitializr.dao.TransactionsAnalyzeEntityMapper;
 import com.happyzombie.springinitializr.service.HotTransactionsFindService;
 import com.happyzombie.springinitializr.service.RedisService;
@@ -21,6 +23,9 @@ public class HotTransactionsFindServiceImpl implements HotTransactionsFindServic
 
     @Resource
     TransactionsAnalyzeEntityMapper transactionsAnalyzeEntityMapper;
+
+    @Resource
+    TransactionAnalyzeFilterEntityMapper transactionAnalyzeFilterEntityMapper;
 
     @Override
     public Set<ZSetOperations.TypedTuple<String>> getHotAccountId(long start, long end) {
@@ -58,5 +63,22 @@ public class HotTransactionsFindServiceImpl implements HotTransactionsFindServic
         request.setEndTime(currentTimestampMilli);
         final Long statisticsTransactionsTotalCount = transactionsAnalyzeEntityMapper.getStatisticsTransactionsTotalCount(request);
         return statisticsTransactionsTotalCount;
+    }
+
+    public List<TransactionAnalyzeFilterEntity> getStatisticsFilterTransactions(GetStatisticsTransactionsRequest request) {
+        final Long time = request.getMilliTime();
+        final Long currentTimestampMilli = DateUtil.getCurrentTimestampMilli();
+        request.setBeginTime(currentTimestampMilli - time);
+        request.setEndTime(currentTimestampMilli);
+        final List<TransactionAnalyzeFilterEntity> transactionAnalyzeFilterEntities = transactionAnalyzeFilterEntityMapper.selectStatistics(request);
+        return transactionAnalyzeFilterEntities;
+    }
+
+    public Long getStatisticsFilterTransactionsTotalCount(GetStatisticsTransactionsRequest request) {
+        final Long time = request.getMilliTime();
+        final Long currentTimestampMilli = DateUtil.getCurrentTimestampMilli();
+        request.setBeginTime(currentTimestampMilli - time);
+        request.setEndTime(currentTimestampMilli);
+        return transactionAnalyzeFilterEntityMapper.getStatisticsTransactionsTotalCount(request);
     }
 }
